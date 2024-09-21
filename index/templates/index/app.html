@@ -1,0 +1,18 @@
+{% load static %}
+<link href="{% static 'native/css/index.css' %}" rel="stylesheet" crossorigin="anonymous">
+<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+<header class='header_grid'>
+	<img src="{% static '/img/logo.png' %}" width="100%">
+	<div></div>
+	<a class='btn btn-warning py-3' href="{% url 'cleanData' %}">Clear Uploads</a>
+	<div></div>
+	<a class='btn btn-danger py-3' href="{% url 'keluar' %}">Keluar</a>
+</header>
+<title>{{ title }}</title>
+{% block content %}
+
+{% endblock content %}
+<script type="text/javascript" charset="utf8" src="{% static 'bootstrap/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>

@@ -1,0 +1,67 @@
+{% extends "index/app.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Dashboard</title>
+</head>
+<body>
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/jquery.dataTables.css' %}">
+<script src="{% static 'bootstrap/js/jquery-3.7.1.min.js' %}"></script>
+<div class='container-fluid'>
+	<div class="mb-4 upload-form">
+		<form method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			<div class="mb-3">
+				<label for="formFileMultiple" class="form-label">Input File Image <b>JPG,PNG,BMP atau GIF</b></label>
+			</div>
+			{{ form.file }}
+			<div class="upload-submit">
+				<input class="btn btn-primary" type="submit" name="submit" value="Upload">
+			</div>
+		</form>
+	</div>
+	<table id="statusTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama</th>
+                <th scope="col">Size</th>
+                <th scope="col">Extension</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#statusTable').DataTable({
+            ajax: {
+                url: '/getData/',
+                dataSrc: ''
+            },
+            columns: [
+                { data: null, render: function(data, type, row, meta) {
+                    return meta.row + 1;
+                }},
+                { data: 'name', orderable: false },
+                { data: 'size' },
+                { data: 'format' , orderable: false},
+                { data: null, orderable: false, render: function(data, type, row) {
+                    return `
+                        <a class="btn btn-success btn-sm" href=analisaData/${row.id} target="_blank">Analisa</a>
+                        <a class="btn btn-danger btn-sm" onClick='deleteData(${row.id}, "${row.name}")'>Delete</a>
+                    `;
+                }}
+            ]
+        });
+    });
+    </script>
+    <script type="text/javascript" charset="utf8" src="{% static 'bootstrap/js/jquery.dataTables.js' %}"></script>
+	<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</div>
+{% endblock content %}
+</body>
+</html>

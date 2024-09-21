@@ -1,0 +1,23 @@
+*{
+	margin:0;
+	padding: 0;
+}
+.header_grid{
+	display: grid;
+	grid-template-columns: 20% 65% 9% 1% 5%;
+	background-color: #e6e6e6;
+  	align-items: center;
+  	padding: 3px;
+}
+.upload-form{
+	background-color: white;
+	border-radius: 5px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+	margin: 1% auto;
+	padding: 40px;
+	width: 30%;
+}
+input[type="submit"]{
+	width: 100%;
+	margin-top: 4%;
+}

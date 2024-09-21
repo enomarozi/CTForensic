@@ -1,0 +1,269 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<style type="text/css">
+    .btn-secondary{
+        margin-left: 5px;
+    }
+</style>
+<div class="container mt-4">
+    <form>
+        <div class="mb-3" id='container-data'>
+        </div>
+    </form>
+</div>
+<script>
+
+function tambah(){
+    let xhr = new XMLHttpRequest();
+    fetch('http://localhost:8000/settingData/tambah/1')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Mengurai respons JSON
+    })
+    .then(data => {
+        console.log(data); // Menampilkan data
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+    location.reload()
+}
+function kurang(){
+    let xhr = new XMLHttpRequest();
+    fetch('http://localhost:8000/settingData/kurang/1')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Mengurai respons JSON
+    })
+    .then(data => {
+        console.log(data); // Menampilkan data
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+    location.reload()
+}
+document.addEventListener('DOMContentLoaded', function(){
+    function createElementData(title_, id_){
+        const container = document.getElementById('container-data');
+        const title = document.createElement('label');
+        title.setAttribute('class','form-label h4');
+        title.textContent = title_;
+        if(title_ === "String"){
+            const button1 = document.createElement('a');
+            button1.setAttribute('class','btn btn-secondary');
+            button1.setAttribute('onClick','tambah()');
+            button1.textContent = "+1 >>";
+            const button2 = document.createElement('a');
+            button2.setAttribute('class','btn btn-secondary');
+            button2.setAttribute('onClick','kurang()');
+            button2.textContent = "<< -1";
+            container.appendChild(title);
+            container.appendChild(button1);
+            container.appendChild(button2);
+        }else{
+            container.appendChild(title);
+        }
+        const label = document.createElement('label');
+        label.setAttribute('class','form-control');
+        label.setAttribute('id',id_);
+
+        container.appendChild(label);
+
+    }
+    function SOI(){
+        let app = ('{{ SOI|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('SOI (Start OF Image)','soivalue');
+            let arr = app.slice(1,-1).split(',');
+            let result = "";
+            let elementApp = document.getElementById('soivalue');
+            arr.forEach(item=>{
+                item = item.slice(1,-1);
+                result += item;
+            })
+            item = result.replace(/[']/g,"");
+            elementApp.innerText += "Marker identifier : "+item;
+        }
+    }
+    function APP0(){
+        let app = ('{{ APP0|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('APP0 (JFIF Segment Marker)','app0value');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('app0value');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/[']/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function APP1(){
+        let app = ('{{ APP1|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('APP1 (JFIF Segment Marker)','app1value');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('app1value');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function SOF(){
+        let app = ('{{ SOF|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('SOF (Start Of Frame)','sofvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('sofvalue');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+
+    function DHT(){
+        let app = ('{{ DHT|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('DHT (Define Huffman Table)','dhtvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('dhtvalue');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/[']/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function DRI(){
+        let app = ('{{ DRI|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('DRI (Define Restart Interval)','drivalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('drivalue');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/[']/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function DQT(){
+        let app = ('{{ DQT|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('DQT (Define Quantization Table)','dqtvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('dqtvalue');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/[']/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+
+    function SOS(){
+        let app = ('{{ SOS|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('SOS (Start Of Scan)','sosvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('sosvalue');
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/[']/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function stringData(){
+        let app = ('{{ string_printable|escapejs }}');
+        if(app){
+            createElementData('String','stringvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('stringvalue');
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                elementApp.innerText += item+"\n";
+            })
+        }
+    }
+
+    function Data(){
+        let app = ('{{ Data|escapejs }}');
+        if(app){
+            createElementData('Data','datavalue');
+            let elementApp = document.getElementById('datavalue');
+            elementApp.innerText += app;
+        }
+    }
+    SOI();
+    APP0();
+    APP1();
+    SOF();
+    DHT();
+    DRI();
+    DQT();
+    SOS();
+    stringData();
+    Data();
+});
+</script>
+{% endblock content %}
