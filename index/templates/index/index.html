@@ -52,7 +52,7 @@
                 { data: null, orderable: false, render: function(data, type, row) {
                     return `
                         <a class="btn btn-success btn-sm" href=analisaData/${row.id} target="_blank">Analisa</a>
-                        <a class="btn btn-danger btn-sm" onClick='deleteData(${row.id}, "${row.name}")'>Delete</a>
+                        <a class="btn btn-danger btn-sm" href=deleteData/${row.id}>Delete</a>
                     `;
                 }}
             ]

@@ -20,9 +20,8 @@ def masuk(request):
 			if user is not None:
 				login(request, user)
 				return HttpResponseRedirect(reverse('index'))
-			messages.error(request, "Username Atau Password Salah.")
 		else:
-			messages.error(request, "Pendaftaran Gagal, Sepertinya Kesalahan Server")
+			messages.error(request, "Username Atau Password Salah.")
 	else:
 		form = CustomAuthenticationForm()
 	return render(request, 'account/masuk.html',{'form':form})
@@ -47,7 +46,7 @@ def registrasi(request):
 			else:
 				messages.error(request, "Pendaftaran Gagal, Panjang Password minimal 8 Karakter")
 		else:
-			messages.error(request, "Pendaftaran Gagal, Sepertinya Kesalahan Server")
+			messages.error(request, "Pendaftaran Gagal, Pastikan lagi Inputannya")
 	else:
 		form = RegistrasiForm()
 	return render(request, 'account/registrasi.html',{'form':form})

@@ -1,0 +1,139 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<style type="text/css">
+    .btn-secondary{
+        margin-left: 5px;
+    }
+</style>
+<div class="container mt-4">
+    <form>
+        <div class="mb-3" id='container-data'>
+        </div>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function createElementData(title_, id_){
+        const container = document.getElementById('container-data');
+        const title = document.createElement('label');
+        title.setAttribute('class','form-label h4');
+        title.textContent = title_;
+        container.appendChild(title);
+        const label = document.createElement('label');
+        label.setAttribute('class','form-control');
+        label.setAttribute('id',id_);
+        container.appendChild(label);
+
+    }
+    function SOI(){
+        let app = ('{{ SOI|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('SOI (Start OF Image)','soivalue');
+            let arr = app.slice(1,-1).split(',');
+            let result = "";
+            let elementApp = document.getElementById('soivalue');
+            arr.forEach(item=>{
+                item = item.slice(1,-1);
+                result += item;
+            })
+            item = result.replace(/[']/g,"");
+            elementApp.innerText += "Marker identifier : "+item;
+        }
+    }
+    function APP0(){
+        let app = ('{{ APP0|escapejs }}');
+        markerData(app, 'APP0 (JFIF Segment Marker)','app0value');
+    }
+    function APP1(){
+        let app = ('{{ APP1|escapejs }}');
+        markerData(app, 'APP1 (JFIF Segment Marker)','app1value');
+    }
+    function SOF(){
+        let app = ('{{ SOF|escapejs }}');
+        markerData(app, 'SOF (Start Of Frame)','sofvalue');
+    }
+    function DHT(){
+        let app = ('{{ DHT|escapejs }}');
+        markerData(app, 'DHT (Define Huffman Table)','dhtvalue');
+    }
+    function DRI(){
+        let app = ('{{ DRI|escapejs }}');
+        markerData(app, 'DRI (Define Restart Interval)','drivalue');
+    }
+    function DQT(){
+        let app = ('{{ DQT|escapejs }}');
+        markerData(app, 'DQT (Define Quantization Table)','dqtvalue');
+    }
+
+    function SOS(){
+        let app = ('{{ SOS|escapejs }}');
+        markerData(app, 'SOS (Start Of Scan)','sosvalue');
+    }
+    function markerData(app, title_, id_){
+        if(app && app !== "None"){
+            createElementData(title_,id_);
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById(id_);
+            list_contain = ['Marker identifier']
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                let contains = list_contain.some(substring=>item.includes(substring));
+                if (contains){
+                    split = item.split(":");
+                    strToint = parseInt(split[1],10);
+                    intTohex = strToint.toString(16);
+                    item = "Marker identifier : "+intTohex;
+                }
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
+    function steghideData(){
+        let app = ('{{ steghideData|escapejs }}');
+        if(app){
+            createElementData('Steghide','steghidevalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('steghidevalue');
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                elementApp.innerText += item+"\n";
+            })
+        }
+    }
+    function stringData(){
+        let app = ('{{ string_printable|escapejs }}');
+        if(app){
+            createElementData('String','stringvalue');
+            let arr = app.slice(1,-1).split(',');
+            let elementApp = document.getElementById('stringvalue');
+            arr.forEach(item=>{
+                item = item.replace(/['"]/g,"");
+                elementApp.innerText += item+"\n";
+            })
+        }
+    }
+
+    function Data(){
+        let app = ('{{ Data|escapejs }}');
+        if(app){
+            createElementData('Data','datavalue');
+            let elementApp = document.getElementById('datavalue');
+            elementApp.innerText += app;
+        }
+    }
+
+    SOI();
+    APP0();
+    APP1();
+    SOF();
+    DHT();
+    DRI();
+    DQT();
+    SOS();
+    steghideData();
+    stringData();
+    Data();
+});
+</script>
+{% endblock content %}

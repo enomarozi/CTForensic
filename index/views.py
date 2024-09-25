@@ -4,11 +4,12 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 from .forms import UploadFileForm
 from .models import ImageFile
-from .modelsNilai import InputNilai
 import os
 import time
 import sys
+import string
 
+letter = string.ascii_lowercase+string.ascii_uppercase+string.digits+"{}_?!"
 sys.set_int_max_str_digits(10000)
 
 def index(request):
@@ -21,7 +22,7 @@ def index(request):
                 fs = FileSystemStorage()
                 filename = fs.save(file.name, file)
                 ImageFile.objects.create(
-                    name=file.name, 
+                    name=filename, 
                     size=fileSize(file.size), 
                     format=filename.split('.')[1]
                 )
@@ -53,9 +54,10 @@ def fileSize(sizes):
 def analisaData(request, id_):
     fileName = ImageFile.objects.get(pk=id_)
     path_file = "uploads/"+str(fileName.name)
-    file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
-    context = {
-            "title":"Analysis",
+    if path_file.split('.')[1] == "jpg":
+        file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
+        context = {
+            "title":"Analysis JPG",
             "SOI":SOI(file),
             "APP0":APP0(file),
             "APP1":APP1(file),
@@ -64,11 +66,18 @@ def analisaData(request, id_):
             "DRI":DRI(file),
             "DQT":DQT(file),
             "SOS":SOS(file),
-            "string_printable":string_printable(file),
+            "steghideData":steghideData(file),
             "Data":Data(file),
+            "string_printable":string_printable(file),
         }
-    return render(request, 'index/analisa.html',context)
+        return render(request, 'index/analisa_jpg.html',context)
 
+    elif path_file.split('.')[1] == "png":
+        file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
+        context = {
+            "title":"Analysis PNG"
+        }
+        return render(request, 'index/analisa_png.html',context)
 def process(field, marker):
     list_ = []
     if marker:
@@ -79,8 +88,11 @@ def process(field, marker):
             if field == "Exif Identifier":
                 _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>9 and int(i,16)<129])
                 list_.append(field+" : "+_bytes_)
-            else:                
-                list_.append(field+" : "+str(int(''.join(data[start:end]),16)))
+            else:
+                try:                
+                    list_.append(field+" : "+str(int(''.join(data[start:end]),16)))
+                except:
+                    print(data[start:end])
             start += size
         return list_
     else:
@@ -90,21 +102,12 @@ def SOI(path_file):
     return path_file[:2]
 
 def APP0(path_file):
-    marker = ""
     header = ["e0"]
     field = {"Marker identifier":2,"Length":2,"File Identifier Mark":5,
              "Major revision number":1,"Minor revision number":1,
              "Units for x/y densities":1,"X-density":2,"Y-density":2,
              "Thumbnail width":1,"Thumbnail height":1}
-
-    bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
-    result = process(field, marker)
-    return result
+    return markerData(header, field, path_file)
 
 def APP1(path_file):
     marker = ""
@@ -123,67 +126,38 @@ def APP1(path_file):
     return result
 
 def SOF(path_file):
-    marker = ""
     header = ["c0","c1","c3","c5","c6",
              "c7","c9","ca","cb","cd",
              "ce","c6"]
     field = {"Marker identifier":2,"Length":2,"Data Precision":1,
              "Image Height":2,"Image Width":2,"Number Component":1,
              "Each Componen":3}
-    bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
-    result = process(field, marker)
-    return result
+    return markerData(header, field, path_file)
 
 def DHT(path_file):
-    marker = ""
     header = ["c4"]
     field = {"Marker identifier":2,"Length":2,"HT information":1,
                 "Number of Symbols":16,"Symbols":2}
-    bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
-    result = process(field, marker)
-    return result
+    return markerData(header, field, path_file)
 
 def DRI(path_file):
-    marker = ""
     header = ["dd"]
     field = {"Marker identifier":2,"Length":2,"Restart interval":2}
-    bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
-    result = process(field, marker)
-    return result
+    return markerData(header, field, path_file)
     
 def DQT(path_file):
-    marker = ""
     header = ["db"]
     field = {"Marker identifier":2,"Length":2,"QT information":1}
-    bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
-    result = process(field, marker)
-    return result
+    return markerData(header, field, path_file)
 
 def SOS(path_file):
-    marker = ""
     header = ["da"]
     field = {"Marker identifier":2,"Length":2,"Number of Components in scan":1,
                 "Each Component":2}
+    return markerData(header, field, path_file)
+
+def markerData(header, field, path_file):
+    marker = ""
     bytes_ = ' '.join(path_file)
     for i in header:
         head = "ff "+i
@@ -198,17 +172,30 @@ def string_printable(path_file):
     data = []
     for i in path_file:
         c = int(i,16)
-        if c >= 32 and c <= 128:
+        if chr(c) in letter:
             result += chr(c)
-            print(result)
         else:
-            if len(result) != 0:
-                record = InputNilai.objects.get(id=1)
-                if result[record.nilai:] != "\n":
-                    data.append(result[record.nilai:])
-                    result = ''
+            if len(result) >= 5:
+                data.append(result)
+            result = ''
 
     return data
+
+def steghideData(path_file):
+    import subprocess
+
+    try:
+        result = subprocess.run(
+            ['steghide','info',path_file],
+            capture_output=True,
+            text=True
+        )
+        if "Stego data" in result.stdout:
+            return "'Ada file Tertanam'"
+        else:
+            return "'Tidak ada file Tertanam'"
+    except:
+        return "'Steghide belum terinstall'"
 
 def Data(path_file):
     header = ["d9"]
@@ -220,15 +207,6 @@ def Data(path_file):
     data = ''.join([chr(int(i,16)) for i in marker if i != ''])
     return data
 
-def settingData(request,nilai,action):
-    record = InputNilai.objects.get(id=1)
-    if action == "tambah":
-        record.nilai += nilai
-    elif action == "kurang":
-        record.nilai -= nilai
-    record.save()
-    return JsonResponse(record.nilai, safe=False)
-
 def cleanData(request):
     ImageFile.objects.all().delete()
     os.system("rm uploads/*")
@@ -238,3 +216,9 @@ def getData(request):
     file_image = ImageFile.objects.all().values('id','name','size','format')
     data = list(file_image)
     return JsonResponse(data, safe=False)
+
+def deleteData(request, id_):
+    data = ImageFile.objects.get(id=id_)
+    os.system("rm uploads/"+data.name)
+    data.delete()
+    return HttpResponseRedirect(reverse('index'))
