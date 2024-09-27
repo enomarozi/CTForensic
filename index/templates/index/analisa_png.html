@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ pHYs|escapejs }}');
         process(app, 'pHYs signature','pHYs');
     }
+    function IEND(){
+        let app = ('{{ IEND|escapejs }}');
+        process(app, 'IEND signature','IEND');
+    }
     function process(app, title_, id_){
         if(app && app !== "None"){
             createElementData(title_,id_);
@@ -76,12 +80,25 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
+    function DATA(){
+        let app = ('{{ DATA|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('Validasi File','valid');
+            let elementApp = document.getElementById('valid');
+            let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
     signature();
     IHDR();
     sRGB();
     gAMA();
     pHYs();
+    IEND();
     IDAT();
+    DATA();
 });
 </script>
 {% endblock content %}

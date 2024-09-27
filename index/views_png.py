@@ -13,9 +13,9 @@ def analisaPNG(request, id_):
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
 		"pHYs":pHYs(file),
+		"IEND":IEND(file),
 		"IDAT":IDAT(file),
 		"DATA":DATA(file),
-
 	}
 	return render(request, 'index/analisa_png.html',context)
 
@@ -46,6 +46,11 @@ def pHYs(file):
 	type_ = b"pHYs"
 	return process(file,field_marker, type_, "pHYs")
 
+def IEND(file):
+	field_marker = {"Data":0}
+	type_ = b"IEND"
+	return process(file,field_marker, type_, "IEND")
+
 def process(file, field_marker, type_, status_):
 	list = []
 	if type_ in file:
@@ -61,7 +66,10 @@ def process(file, field_marker, type_, status_):
 	start, end = 0,0
 	for field,size in field_marker.items():
 		end += size
-		list.append(field+" : "+str(int("".join(data[start:end]),16)))
+		try:
+			list.append(field+" : "+str(int("".join(data[start:end]),16)))
+		except:
+			list.append("Data : null")
 		start += size
 	return ("Marker identifier : "+type_.decode('ascii'),list,hex(crc_)[2:]+" "+status)
 
@@ -84,20 +92,29 @@ def IDAT(file):
 	return crc_list
 
 def DATA(file):
-	print("Panjang file :",len(file))
+	list_data = []
 	result = 0
 	marker = [b"IHDR",b"sRGB",b"gAMA",b"pHYs"]
-	result += 8
+	header = 8
+	result += header
 	for i in marker:
-		data_length = int.from_bytes(file.split(i)[0][-4:],byteorder='big')
-		result += 4+4+data_length+4
-	print("result :",result)
+		if i in file:
+			data_length = int.from_bytes(file.split(i)[0][-4:],byteorder='big')
+			result += 4+4+data_length+4
 	idat = file.split(b"IDAT")
-	for i in range(len(idat)+1):
+	for i in range(len(idat)):
 		try:
-			size_ = int(idat[i][-4:].hex(),16)
-			print(hex(size_))
-			result += size_
+			size_ = idat[i][-4:]
+			if size_.hex() != "ae426082":
+				list_data.append(size_.hex())
+				data = 4+4+int(size_.hex(),16)+4
+				result += data
+
 		except:
 			pass
-	#print(result)
+	footer = 12
+	result += footer
+	if result == len(file):
+		return (list_data,"Panjang bytes file : "+str(result)+" Panjang bytes file sesuai")
+	else:
+		return (list_data,"Panjang bytes file tidak sesuai, pengukuran = "+str(result)+" sedangkan filenya = "+str(len(file)))
