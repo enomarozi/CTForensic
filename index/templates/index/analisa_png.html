@@ -41,18 +41,47 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function IHDR(){
         let app = ('{{ IHDR|escapejs }}');
+        process(app, 'IHDR signature','IHDR');
+    }
+    function sRGB(){
+        let app = ('{{ sRGB|escapejs }}');
+        process(app, 'sRGB signature','sRGB');
+    }
+    function gAMA(){
+        let app = ('{{ gAMA|escapejs }}');
+        process(app, 'gAMA signature','gAMA');
+    }
+    function pHYs(){
+        let app = ('{{ pHYs|escapejs }}');
+        process(app, 'pHYs signature','pHYs');
+    }
+    function process(app, title_, id_){
         if(app && app !== "None"){
-            createElementData('IHDR signature','IHDR');
-            let elementApp = document.getElementById('IHDR');
+            createElementData(title_,id_);
+            let elementApp = document.getElementById(id_);
             let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
             arr.forEach(item=>{
                 elementApp.innerText += item+"\n";
-            })
-            
+            });
+        }
+    }
+    function IDAT(){
+        let app = ('{{ IDAT|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('IDAT CRC signature','IDAT');
+            let elementApp = document.getElementById('IDAT');
+            let arr = app.slice(1,-1).replace(/[']/g,"").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            });
         }
     }
     signature();
     IHDR();
+    sRGB();
+    gAMA();
+    pHYs();
+    IDAT();
 });
 </script>
 {% endblock content %}
