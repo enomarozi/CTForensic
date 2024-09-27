@@ -51,33 +51,25 @@ def fileSize(sizes):
                 fix = nilai[0]+"."+nilai[1][:2]+" "+list_size[i]
     return fix
 
-def analisaData(request, id_):
+def analisaJPG(request, id_):
     fileName = ImageFile.objects.get(pk=id_)
-    path_file = "uploads/"+str(fileName.name)
-    if path_file.split('.')[1] == "jpg":
-        file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
-        context = {
-            "title":"Analysis JPG",
-            "SOI":SOI(file),
-            "APP0":APP0(file),
-            "APP1":APP1(file),
-            "SOF":SOF(file),
-            "DHT":DHT(file),
-            "DRI":DRI(file),
-            "DQT":DQT(file),
-            "SOS":SOS(file),
-            "steghideData":steghideData(file),
-            "Data":Data(file),
-            "string_printable":string_printable(file),
-        }
-        return render(request, 'index/analisa_jpg.html',context)
-
-    elif path_file.split('.')[1] == "png":
-        file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
-        context = {
-            "title":"Analysis PNG"
-        }
-        return render(request, 'index/analisa_png.html',context)
+    path_file = "uploads/"+fileName.name
+    file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
+    context = {
+        "title":"Analysis JPG",
+        "SOI":SOI(file),
+        "APP0":APP0(file),
+        "APP1":APP1(file),
+        "SOF":SOF(file),
+        "DHT":DHT(file),
+        "DRI":DRI(file),
+        "DQT":DQT(file),
+        "SOS":SOS(file),
+        "steghideData":steghideData(file),
+        "Data":Data(file),
+        "string_printable":string_printable(file),
+    }
+    return render(request, 'index/analisa_jpg.html',context)
 def process(field, marker):
     list_ = []
     if marker:
@@ -98,8 +90,8 @@ def process(field, marker):
     else:
         return None
 
-def SOI(path_file):
-    return path_file[:2]
+def SOI(file):
+    return file[:2]
 
 def APP0(path_file):
     header = ["e0"]

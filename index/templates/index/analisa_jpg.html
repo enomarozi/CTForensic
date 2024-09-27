@@ -28,17 +28,15 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function SOI(){
         let app = ('{{ SOI|escapejs }}');
+        let status = "FALSE"
         if(app && app !== "None"){
-            createElementData('SOI (Start OF Image)','soivalue');
-            let arr = app.slice(1,-1).split(',');
-            let result = "";
-            let elementApp = document.getElementById('soivalue');
-            arr.forEach(item=>{
-                item = item.slice(1,-1);
-                result += item;
-            })
-            item = result.replace(/[']/g,"");
-            elementApp.innerText += "Marker identifier : "+item;
+            createElementData('File Signature','signature');
+            let arr = app.slice(1,-1).replace(/[', ]/g,"");
+            let elementApp = document.getElementById('signature');
+            if(arr === "ffd8"){
+                status = "TRUE"
+            }
+            elementApp.innerText += "Marker identifier : "+arr+" "+status;
         }
     }
     function APP0(){

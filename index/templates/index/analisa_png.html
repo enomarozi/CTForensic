@@ -14,7 +14,45 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    console.log(123);
+    function createElementData(title_, id_){
+        const container = document.getElementById('container-data');
+        const title = document.createElement('label');
+        title.setAttribute('class','form-label h4');
+        title.textContent = title_;
+        container.appendChild(title);
+        const label = document.createElement('label');
+        label.setAttribute('class','form-control');
+        label.setAttribute('id',id_);
+        container.appendChild(label);
+
+    }
+    function signature(){
+        let app = ('{{ signature|escapejs }}');
+        let status = "FALSE"
+        if(app && app !== "None"){
+            createElementData('File Signature','signature');
+            let arr = app.slice(1,-1).replace(/[', ]/g,"");
+            let elementApp = document.getElementById('signature');
+            if(arr === "89504e470d0a1a0a"){
+                status = "TRUE"
+            }
+            elementApp.innerText += "Marker identifier : "+arr+" "+status;
+        }
+    }
+    function IHDR(){
+        let app = ('{{ IHDR|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('IHDR signature','IHDR');
+            let elementApp = document.getElementById('IHDR');
+            let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            })
+            
+        }
+    }
+    signature();
+    IHDR();
 });
 </script>
 {% endblock content %}
