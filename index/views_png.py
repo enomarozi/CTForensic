@@ -97,12 +97,20 @@ def IDAT(file):
 def tEXt(file):
 	crc_list = []
 	text = file.split(b"tEXt")
-	for i in range:
+	for i in range(len(text)):
 		try:
 			size_ = text[i][-4:]
 			type_ = b"tEXt"
+			data_ = text[i+1][:int.from_bytes(size_, byteorder='big')]
+			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
+			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
+			if check in file:
+				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_]))
+			else:
+				crc_list.append('Not Found')
 		except:
 			pass
+	return crc_list
 def RGB_channel(file):
 	result = ''
 	text = ''
