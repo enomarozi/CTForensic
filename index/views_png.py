@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import ImageFile
 import binascii
+import cv2
 
 def analisaPNG(request, id_):
 	fileName = ImageFile.objects.get(pk=id_)
@@ -13,8 +14,10 @@ def analisaPNG(request, id_):
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
 		"pHYs":pHYs(file),
+		"tEXt":tEXt(file),
 		"IEND":IEND(file),
 		"IDAT":IDAT(file),
+		"RGB_channel":RGB_channel(path_file),
 		"DATA":DATA(file),
 	}
 	return render(request, 'index/analisa_png.html',context)
@@ -90,6 +93,30 @@ def IDAT(file):
 		except:
 			pass
 	return crc_list
+
+def tEXt(file):
+	crc_list = []
+	text = file.split(b"tEXt")
+	for i in range:
+		try:
+			size_ = text[i][-4:]
+			type_ = b"tEXt"
+		except:
+			pass
+def RGB_channel(file):
+	result = ''
+	text = ''
+	img = cv2.imread(file)
+	image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+	for i in image_rgb:
+		for j in i:
+			for k in j:
+				if len(result) == 8:
+					if int(result,2) >= 32 and int(result,2) <= 126:
+						text += chr(int(result,2))
+						result = ''
+				result += bin(k)[-1:]
+	return text
 
 def DATA(file):
 	list_data = []

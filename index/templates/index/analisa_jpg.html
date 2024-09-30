@@ -99,6 +99,15 @@ document.addEventListener('DOMContentLoaded', function(){
             })
         }
     }
+    function Data(){
+        let app = ('{{ Data|escapejs }}');
+        if(app){
+            createElementData('Data','datavalue');
+            let elementApp = document.getElementById('datavalue');
+            elementApp.innerText += app;
+        }
+    }
+
     function stringData(){
         let app = ('{{ string_printable|escapejs }}');
         if(app){
@@ -109,15 +118,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 item = item.replace(/['"]/g,"");
                 elementApp.innerText += item+"\n";
             })
-        }
-    }
-
-    function Data(){
-        let app = ('{{ Data|escapejs }}');
-        if(app){
-            createElementData('Data','datavalue');
-            let elementApp = document.getElementById('datavalue');
-            elementApp.innerText += app;
         }
     }
 

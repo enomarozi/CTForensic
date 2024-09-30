@@ -5,6 +5,10 @@
     .btn-secondary{
         margin-left: 5px;
     }
+    textarea {
+        overflow-y: auto; 
+        resize: none;
+    }
 </style>
 <div class="container mt-4">
     <form>
@@ -55,6 +59,11 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ pHYs|escapejs }}');
         process(app, 'pHYs signature','pHYs');
     }
+    function tEXt(){
+        let app = ('{{ tEXt|escapejs }}');
+        console.log(app);
+        process(app, 'tEXt signature','tEXt');
+    }
     function IEND(){
         let app = ('{{ IEND|escapejs }}');
         process(app, 'IEND signature','IEND');
@@ -80,6 +89,15 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
+    function RGB(){
+        let app = ('{{ RGB_channel|escapejs }}');
+        console.log(app);
+        if(app && app !== "None"){
+            createElementData('RGB Channel (Steganography)','rgb');
+            let elementApp = document.getElementById('rgb');
+            elementApp.innerText += app;
+        }
+    }
     function DATA(){
         let app = ('{{ DATA|escapejs }}');
         if(app && app !== "None"){
@@ -96,8 +114,10 @@ document.addEventListener('DOMContentLoaded', function(){
     sRGB();
     gAMA();
     pHYs();
+    tEXt();
     IEND();
     IDAT();
+    RGB();
     DATA();
 });
 </script>
