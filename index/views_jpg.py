@@ -4,7 +4,7 @@ import time
 import sys
 import string
 
-letter = string.ascii_lowercase+string.ascii_uppercase+string.digits+"{}_?!"
+letter = string.ascii_lowercase+string.ascii_uppercase+string.digits+"{}_!"
 sys.set_int_max_str_digits(10000)
 
 def analisaJPG(request, id_):
@@ -127,7 +127,6 @@ def string_printable(path_file):
             if len(result) >= 5:
                 data.append(result)
             result = ''
-
     return data
 
 def steghideData(path_file):

@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
+        const keywords = ["datavalue","stringvalue"];
+        const containsKeyword = keywords.some(keyword => id_.includes(keyword));
+        if(containsKeyword){
+            label.style.overflowY = 'scroll';
+            label.style.height = '250px';
+        }
         label.setAttribute('id',id_);
         container.appendChild(label);
 

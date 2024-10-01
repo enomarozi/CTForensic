@@ -5,10 +5,6 @@
     .btn-secondary{
         margin-left: 5px;
     }
-    textarea {
-        overflow-y: auto; 
-        resize: none;
-    }
 </style>
 <div class="container mt-4">
     <form>
@@ -26,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
+        const keywords = ["lsb", "msb","otherData"];
+        const containsKeyword = keywords.some(keyword => id_.includes(keyword));
+        if(containsKeyword){
+            label.style.overflowY = 'scroll';
+            label.style.height = '250px';
+        }
         label.setAttribute('id',id_);
         container.appendChild(label);
 
@@ -61,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function tEXt(){
         let app = ('{{ tEXt|escapejs }}');
-        console.log(app);
         process(app, 'tEXt signature','tEXt');
     }
     function IEND(){
@@ -89,12 +90,19 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
-    function RGB(){
-        let app = ('{{ RGB_channel|escapejs }}');
-        console.log(app);
+    function RGB_LSB(){
+        let app = ('{{ RGB_LSB|escapejs }}');
         if(app && app !== "None"){
-            createElementData('RGB Channel (Steganography)','rgb');
-            let elementApp = document.getElementById('rgb');
+            createElementData('RGB Channel (Steganography) LSB','lsb');
+            let elementApp = document.getElementById('lsb');
+            elementApp.innerText += app;
+        }
+    }
+    function RGB_MSB(){
+        let app = ('{{ RGB_MSB|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('RGB Channel (Steganography) MSB','msb');
+            let elementApp = document.getElementById('msb');
             elementApp.innerText += app;
         }
     }
@@ -109,6 +117,17 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
+    function otherData(){
+        let app = ('{{ otherData|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('Data Lain','otherData');
+            let elementApp = document.getElementById('otherData');
+            let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
     signature();
     IHDR();
     sRGB();
@@ -117,8 +136,10 @@ document.addEventListener('DOMContentLoaded', function(){
     tEXt();
     IEND();
     IDAT();
-    RGB();
+    RGB_LSB();
+    RGB_MSB();
     DATA();
+    otherData();
 });
 </script>
 {% endblock content %}

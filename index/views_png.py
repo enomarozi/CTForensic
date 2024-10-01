@@ -3,6 +3,8 @@ from .models import ImageFile
 import binascii
 import cv2
 
+letter = ''.join([chr(i) for i in range(32,127)])
+
 def analisaPNG(request, id_):
 	fileName = ImageFile.objects.get(pk=id_)
 	path_file = "uploads/"+fileName.name
@@ -17,8 +19,10 @@ def analisaPNG(request, id_):
 		"tEXt":tEXt(file),
 		"IEND":IEND(file),
 		"IDAT":IDAT(file),
-		"RGB_channel":RGB_channel(path_file),
+		"RGB_LSB":RGB_LSB(path_file),
+		"RGB_MSB":RGB_MSB(path_file),
 		"DATA":DATA(file),
+		"otherData":otherData(file),
 	}
 	return render(request, 'index/analisa_png.html',context)
 
@@ -105,31 +109,52 @@ def tEXt(file):
 			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
 			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
 			if check in file:
-				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_]))
+				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_])+" "+hex(crc_)[2:])
 			else:
 				crc_list.append('Not Found')
 		except:
 			pass
 	return crc_list
-def RGB_channel(file):
-	result = ''
-	text = ''
-	img = cv2.imread(file)
-	image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-	for i in image_rgb:
-		for j in i:
-			for k in j:
-				if len(result) == 8:
-					if int(result,2) >= 32 and int(result,2) <= 126:
-						text += chr(int(result,2))
-						result = ''
-				result += bin(k)[-1:]
+def RGB_LSB(file):
+	try:
+		result = ''
+		text = ''
+		img = cv2.imread(file)
+		image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+		for i in image_rgb:
+			for j in i:
+				for k in j:
+					if len(result) == 8:
+						if chr(int(result,2)) in letter:
+							text += chr(int(result,2))
+							result = ''
+					result += bin(k)[-1:]
+	except Exception as e:
+		text = "'Image Error : "+str(e)+"'"
+	return text
+
+def RGB_MSB(file):
+	try:
+		result = ''
+		text = ''
+		img = cv2.imread(file)
+		image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+		for i in image_rgb:
+			for j in i:
+				for k in j:
+					if len(result) == 8:
+						if chr(int(result,2)) in letter:
+							text += chr(int(result,2))
+							result = ''
+					result += bin(k)[2:].rjust(8,'0')[:1]
+	except Exception as e:
+		text = "'Image Error : "+str(e)+"'"
 	return text
 
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"sRGB",b"gAMA",b"pHYs"]
+	marker = [b"IHDR",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
 	header = 8
 	result += header
 	for i in marker:
@@ -153,3 +178,7 @@ def DATA(file):
 		return (list_data,"Panjang bytes file : "+str(result)+" Panjang bytes file sesuai")
 	else:
 		return (list_data,"Panjang bytes file tidak sesuai, pengukuran = "+str(result)+" sedangkan filenya = "+str(len(file)))
+
+def otherData(path_file):
+    data = path_file.split(b'IEND')
+    return data[1][4:]
