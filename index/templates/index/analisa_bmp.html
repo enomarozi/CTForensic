@@ -34,28 +34,33 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function header(){
         let app = ('{{ headerBMP|escapejs }}');
-        console.log(app);
         markerData(app, 'Header Signature','header');
     }
     function info(){
         let app = ('{{ infoHeaderBMP|escapejs }}');
-        console.log(app);
         markerData(app, 'Header Info','info');
     }
     function markerData(app, title_, id_){
         if(app && app !== "None"){
             createElementData(title_,id_);
-            let arr = app.slice(1,-1).replace(/[']/g,"").split(',')
+            let arr = app.slice(1,-1).split(',')
             let elementApp = document.getElementById(id_);
             arr.forEach(item=>{
-                items = item.slice(1,-1)
+                items = item.slice(1,-1).replace(/["']/g,"")
                 elementApp.innerText += items+"\n";
             });
         }
     }
-
+    function table(){
+        let app = ('{{ colorTable|escapejs }}');
+        createElementData("Colors Table",'colors');
+        let elementApp = document.getElementById('colors');
+        let arr = app.slice(1,-1).replace(/["',]/g,"")
+        elementApp.innerText += arr+"\n";
+    }
     header();
     info();
+    table();
 });
 </script>
 {% endblock content %}

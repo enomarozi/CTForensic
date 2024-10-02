@@ -37,14 +37,16 @@ def process(file,header,start_):
 		if field == "Signature":
 			marker.append("'Marker :"+file[start:end].decode('ascii')+"'")
 		else:
-			value = ''.join([hex(i)[2:].rjust(2,'0') for i in file[start:end]][::-1])
-			marker.append(field+" : "+str(int(value,16)))
+			value = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[start:end]][::-1]),16)
+			if value == 0:
+				marker.append("'"+field+" : 00'")
+			else:
+				marker.append("'"+field+" : "+str(value))
 		start += size
 	return marker
 
 def colorTable(file):
 	marker = []
 	for i in file[55:245+55]:
-
-		print(hex(i)[2:].rjust(2,'0'))
-		time.sleep(0.2)
+	 	marker.append(hex(i)[2:].rjust(2,'0'))
+	return marker
