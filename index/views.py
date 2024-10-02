@@ -30,7 +30,8 @@ def index(request):
 def signatureFile(file):
 	signature = {bytes.fromhex("89504E470D0A1A0A"):"png",
 				 bytes.fromhex("49484452"):"png",
-				 bytes.fromhex("FFD8"):"jpg",}
+				 bytes.fromhex("FFD8"):"jpg",
+				 bytes.fromhex("424D"):"bmp",}
 	for key,value in signature.items():
 		if key in file[:20]:
 			return value

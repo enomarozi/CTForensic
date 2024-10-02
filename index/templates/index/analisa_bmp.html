@@ -1,0 +1,61 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<style type="text/css">
+    .btn-secondary{
+        margin-left: 5px;
+    }
+</style>
+<div class="container mt-4">
+    <form>
+        <div class="mb-3" id='container-data'>
+        </div>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function createElementData(title_, id_){
+        const container = document.getElementById('container-data');
+        const title = document.createElement('label');
+        title.setAttribute('class','form-label h4');
+        title.textContent = title_;
+        container.appendChild(title);
+        const label = document.createElement('label');
+        label.setAttribute('class','form-control');
+        const keywords = ["datavalue","stringvalue"];
+        const containsKeyword = keywords.some(keyword => id_.includes(keyword));
+        if(containsKeyword){
+            label.style.overflowY = 'scroll';
+            label.style.height = '250px';
+        }
+        label.setAttribute('id',id_);
+        container.appendChild(label);
+
+    }
+    function header(){
+        let app = ('{{ headerBMP|escapejs }}');
+        console.log(app);
+        markerData(app, 'Header Signature','header');
+    }
+    function info(){
+        let app = ('{{ infoHeaderBMP|escapejs }}');
+        console.log(app);
+        markerData(app, 'Header Info','info');
+    }
+    function markerData(app, title_, id_){
+        if(app && app !== "None"){
+            createElementData(title_,id_);
+            let arr = app.slice(1,-1).replace(/[']/g,"").split(',')
+            let elementApp = document.getElementById(id_);
+            arr.forEach(item=>{
+                items = item.slice(1,-1)
+                elementApp.innerText += items+"\n";
+            });
+        }
+    }
+
+    header();
+    info();
+});
+</script>
+{% endblock content %}
