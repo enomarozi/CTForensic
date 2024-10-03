@@ -21,6 +21,7 @@ def analisaJPG(request, id_):
         "DRI":DRI(file),
         "DQT":DQT(file),
         "SOS":SOS(file),
+        "Comment":Comment(file),
         "steghideData":steghideData(file),
         "Data":Data(file),
         "string_printable":string_printable(file),
@@ -37,6 +38,9 @@ def process(field, marker):
             if field == "Exif Identifier":
                 _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>9 and int(i,16)<129])
                 list_.append(field+" : "+_bytes_)
+            elif field == "Comment":
+                _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>9 and int(i,16)<129])
+                list_.append(field+" : "+_bytes_)
             else:
                 try:                
                     list_.append(field+" : "+str(int(''.join(data[start:end]),16)))
@@ -51,7 +55,7 @@ def SOI(file):
     return file[:2]
 
 def APP0(path_file):
-    header = ["e0"]
+    header = "e0"
     field = {"Marker identifier":2,"Length":2,"File Identifier Mark":5,
              "Major revision number":1,"Minor revision number":1,
              "Units for x/y densities":1,"X-density":2,"Y-density":2,
@@ -75,57 +79,56 @@ def APP1(path_file):
     return result
 
 def SOF(path_file):
-    header = ["c0","c1","c3","c5","c6",
-             "c7","c9","ca","cb","cd",
-             "ce","c6"]
+    header = "c0"
     field = {"Marker identifier":2,"Length":2,"Data Precision":1,
              "Image Height":2,"Image Width":2,"Number Component":1,
              "Each Componen":3}
     return markerData(header, field, path_file)
-
 def DHT(path_file):
-    header = ["c4"]
+    header = "c4"
     field = {"Marker identifier":2,"Length":2,"HT information":1,
                 "Number of Symbols":16,"Symbols":2}
     return markerData(header, field, path_file)
-
-def DRI(path_file):
-    header = ["dd"]
-    field = {"Marker identifier":2,"Length":2,"Restart interval":2}
-    return markerData(header, field, path_file)
-    
-def DQT(path_file):
-    header = ["db"]
-    field = {"Marker identifier":2,"Length":2,"QT information":1}
-    return markerData(header, field, path_file)
-
 def SOS(path_file):
-    header = ["da"]
+    header = "da"
     field = {"Marker identifier":2,"Length":2,"Number of Components in scan":1,
                 "Each Component":2}
+    return markerData(header, field, path_file)
+def DQT(path_file):
+    header = "db"
+    field = {"Marker identifier":2,"Length":2,"QT information":1}
+    return markerData(header, field, path_file)
+def DRI(path_file):
+    header = "dd"
+    field = {"Marker identifier":2,"Length":2,"Restart interval":2}
+    return markerData(header, field, path_file)
+def Comment(path_file):
+    header = "fe"
+    bytes_ = ' '.join(path_file)
+    if "ff "+header in bytes_:
+        length_ = bytes_.split("ff "+header)[1].split('ff')[0][1:-1].split(' ')
+    field = {"Marker identifier":2,"Length":2,"Comment":len(length_)-2}
     return markerData(header, field, path_file)
 
 def markerData(header, field, path_file):
     marker = ""
     bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            break
+    head = "ff "+header
+    if head in bytes_:
+        marker = head+""+bytes_.split(head)[1].split('ff')[0]
     result = process(field, marker)
     return result
 
 def string_printable(path_file):
     result = ""
-    data = []
+    data = ""
     for i in path_file:
         c = int(i,16)
         if chr(c) in letter:
             result += chr(c)
         else:
             if len(result) >= 5:
-                data.append(result)
+                data += result+'\n'
             result = ''
     return data
 

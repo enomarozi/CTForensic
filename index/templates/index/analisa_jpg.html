@@ -5,12 +5,18 @@
     .btn-secondary{
         margin-left: 5px;
     }
+    #datavalue,#stringvalue{
+         overflow: scroll;
+         height: 250px;
+    }
 </style>
 <div class="container mt-4">
-    <form>
-        <div class="mb-3" id='container-data'>
-        </div>
-    </form>
+    <div class="mb-3" id='container-data'>
+    </div>
+    <div class="mb-3" id='container-data'>
+        <label class="form-label h4">String</label>
+        <label class="form-control" id='stringvalue'>{{string_printable|linebreaks}}</label>
+    </div>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -22,27 +28,16 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
-        const keywords = ["datavalue","stringvalue"];
-        const containsKeyword = keywords.some(keyword => id_.includes(keyword));
-        if(containsKeyword){
-            label.style.overflowY = 'scroll';
-            label.style.height = '250px';
-        }
         label.setAttribute('id',id_);
         container.appendChild(label);
-
     }
     function SOI(){
         let app = ('{{ SOI|escapejs }}');
-        let status = "FALSE"
         if(app && app !== "None"){
             createElementData('File Signature','signature');
             let arr = app.slice(1,-1).replace(/[', ]/g,"");
             let elementApp = document.getElementById('signature');
-            if(arr === "ffd8"){
-                status = "TRUE"
-            }
-            elementApp.innerText += "Marker identifier : "+arr+" "+status;
+            elementApp.innerText += "Marker identifier : "+arr;
         }
     }
     function APP0(){
@@ -69,10 +64,13 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ DQT|escapejs }}');
         markerData(app, 'DQT (Define Quantization Table)','dqtvalue');
     }
-
     function SOS(){
         let app = ('{{ SOS|escapejs }}');
         markerData(app, 'SOS (Start Of Scan)','sosvalue');
+    }
+    function Comment(){
+        let app = ('{{ Comment|escapejs }}');
+        markerData(app, 'Comment','comment');
     }
     function markerData(app, title_, id_){
         if(app && app !== "None"){
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function steghideData(){
         let app = ('{{ steghideData|escapejs }}');
-        if(app){
+        if(app && app !== "None"){
             createElementData('Steghide','steghidevalue');
             let arr = app.slice(1,-1).split(',');
             let elementApp = document.getElementById('steghidevalue');
@@ -106,24 +104,11 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }
     function Data(){
-        let app = ('{{ Data|escapejs }}');
-        if(app){
-            createElementData('Data','datavalue');
+        let app = ('{{Data|escapejs}}');
+        if(app && app !== "None"){
+            createElementData('Outsite Data','datavalue');
             let elementApp = document.getElementById('datavalue');
-            elementApp.innerText += app;
-        }
-    }
-
-    function stringData(){
-        let app = ('{{ string_printable|escapejs }}');
-        if(app){
-            createElementData('String','stringvalue');
-            let arr = app.slice(1,-1).split(',');
-            let elementApp = document.getElementById('stringvalue');
-            arr.forEach(item=>{
-                item = item.replace(/['"]/g,"");
-                elementApp.innerText += item+"\n";
-            })
+            elementApp.innerText += app+"\n";
         }
     }
 
@@ -135,8 +120,8 @@ document.addEventListener('DOMContentLoaded', function(){
     DRI();
     DQT();
     SOS();
+    Comment();
     steghideData();
-    stringData();
     Data();
 });
 </script>
