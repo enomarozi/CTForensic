@@ -13,8 +13,11 @@ def analisaPNG(request, id_):
 		"title":"Analysis PNG",
 		"signature":signature(file),
 		"IHDR":IHDR(file),
+		"sBIT":sBIT(file),
 		"bKGD":bKGD(file),
 		"PLTE":PLTE(file),
+		"tRNS":tRNS(file),
+		"iTXt":iTXt(file),
 		"tIME":tIME(file),
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
@@ -27,7 +30,6 @@ def analisaPNG(request, id_):
 		"DATA":DATA(file),
 		"otherData":otherData(file),
 	}
-	print(IDAT(file))
 	return render(request, 'index/analisa_png.html',context)
 
 def signature(file):
@@ -41,6 +43,20 @@ def IHDR(file):
 	type_ = b"IHDR"
 	return process(file,field_marker, type_, "IHDR")
 
+def sBIT(file):
+	type_ = b"sBIT"
+	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
+	if length == 1:
+		field_marker = {"Grayscale":1}
+	elif length == 2:
+		field_marker = {"Grayscale":1,"Alpha":1}
+	elif length == 3:
+		field_marker = {"Red":1,"Green":1,"Blue":1}
+	else:
+		field_marker = {"Red":1,"Green":1,"Blue":1,"Alpha":1}
+	
+	return process(file,field_marker, type_, "sBIT")
+
 def bKGD(file):
 	type_ = b"bKGD"
 	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
@@ -52,6 +68,18 @@ def PLTE(file):
 	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
 	field_marker = {"Data PLTE":length}
 	return process(file,field_marker, type_,"PLTE")
+
+def tRNS(file):
+	type_ = b"tRNS"
+	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
+	field_marker = {"Data tRNS":length}
+	return process(file,field_marker,type_,"tRNS")
+
+def iTXt(file):
+	type_ = b"iTXt"
+	length = int.from_bytes(file.split(type_)[0][-4:],byteorder="big")
+	field_marker = {"Data iTXt":length}
+	return process(file,field_marker,type_,"iTXt")
 
 def tIME(file):
 	field_marker = {"Year":2,"Month":1,"Day":1,"Hour":1,"Minute":1,"Second":1}
@@ -75,12 +103,14 @@ def pHYs(file):
 	return process(file,field_marker, type_, "pHYs")
 
 def IEND(file):
-	field_marker = {"Data":0}
+	field_marker = {"Data IEND":0}
 	type_ = b"IEND"
 	return process(file,field_marker, type_, "IEND")
 
 def process(file, field_marker, type_, status_):
 	list = []
+	ascii_list = ["Data iTXt"]
+	hexa_list = ["Data tRNS","Data PLTE"]
 	if type_ in file:
 		size_ = file.split(type_)[0][-4:]
 	else:
@@ -95,7 +125,13 @@ def process(file, field_marker, type_, status_):
 	for field,size in field_marker.items():
 		end += size
 		try:
-			list.append(field+" : "+str(int("".join(data[start:end]),16)))
+			if field in ascii_list:
+				_bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>=32 and int(i,16)<=126])
+				list.append(field+" : "+_bytes_)
+			elif field in hexa_list:
+				list.append(field+" : "+"".join(data[start:end]))
+			else:
+				list.append(field+" : "+str(int("".join(data[start:end]),16)))
 		except:
 			list.append("Data : null")
 		start += size
@@ -103,6 +139,8 @@ def process(file, field_marker, type_, status_):
 def tEXt(file):
 	crc_list = []
 	text = file.split(b"tEXt")
+	if len(text) == 1:
+		return ""
 	for i in range(len(text)):
 		try:
 			size_ = text[i][-4:]
@@ -110,13 +148,15 @@ def tEXt(file):
 			data_ = text[i+1][:int.from_bytes(size_, byteorder='big')]
 			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
 			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
+			status = "CRC tEXt FALSE"
 			if check in file:
 				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_])+" "+check.hex())
+				status = "CRC tEXt TRUE"
 			else:
 				crc_list.append('Not Found')
 		except:
-			crc_list = ''
-	return crc_list
+			pass
+	return ("Marker identifier : "+type_.decode('ascii'),crc_list,check.hex()+" "+status)
 def IDAT(file):
 	crc_list = []
 	idat = file.split(b"IDAT")
@@ -173,7 +213,7 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"PLTE",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
+	marker = [b"IHDR",b"sBIT",b"tEXt",b"PLTE",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"pHYs"]
 	header = 8
 	result += header
 	for i in marker:

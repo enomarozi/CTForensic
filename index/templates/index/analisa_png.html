@@ -20,11 +20,15 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
-        const keywords = ["lsb", "msb","otherData"];
-        const containsKeyword = keywords.some(keyword => id_.includes(keyword));
-        if(containsKeyword){
+        const Y_scroll = ["lsb", "msb","otherData"];
+        const X_scroll = ["PLTE", "tRNS"];
+        const Y_scrollContaint = Y_scroll.some(keyword => id_.includes(keyword));
+        const X_scrollContaint = X_scroll.some(keyword => id_.includes(keyword));
+        if(Y_scrollContaint){
             label.style.overflowY = 'scroll';
             label.style.height = '250px';
+        }else if(X_scrollContaint){
+            label.style.overflowX = 'scroll';
         }
         label.setAttribute('id',id_);
         container.appendChild(label);
@@ -46,6 +50,10 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ IHDR|escapejs }}');
         process(app, 'IHDR signature','IHDR');
     }
+    function sBIT(){
+        let app = ('{{ sBIT|escapejs }}');
+        process(app, 'sBIT signature','sBIT');
+    }
     function bKGD(){
         let app = ('{{ bKGD|escapejs }}');
         process(app, 'bKGD signature','bKGD');
@@ -53,6 +61,14 @@ document.addEventListener('DOMContentLoaded', function(){
     function PLTE(){
         let app = ('{{ PLTE|escapejs }}');
         process(app, 'PLTE signature','PLTE');
+    }
+    function tRNS(){
+        let app = ('{{ tRNS|escapejs }}');
+        process(app, 'tRNS signature','tRNS');
+    }
+    function iTXt(){
+        let app = ('{{ iTXt|escapejs }}');
+        process(app, 'iTXt signature','iTXt');
     }
     function tIME(){
         let app = ('{{ tIME|escapejs }}');
@@ -140,8 +156,11 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     signature();
     IHDR();
+    sBIT();
     bKGD();
     PLTE();
+    tRNS();
+    iTXt();
     tIME();
     sRGB();
     gAMA();
