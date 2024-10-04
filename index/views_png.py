@@ -103,7 +103,7 @@ def pHYs(file):
 	return process(file,field_marker, type_, "pHYs")
 
 def IEND(file):
-	field_marker = {"Data IEND":0}
+	field_marker = {"Data ":0}
 	type_ = b"IEND"
 	return process(file,field_marker, type_, "IEND")
 
