@@ -21,6 +21,7 @@ def analisaPNG(request, id_):
 		"tIME":tIME(file),
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
+		"cHRM":cHRM(file),
 		"pHYs":pHYs(file),
 		"tEXt":tEXt(file),
 		"IEND":IEND(file),
@@ -96,6 +97,11 @@ def gAMA(file):
 	type_ = b"gAMA"
 	return process(file,field_marker, type_, "gAMA")
 
+def cHRM(file):
+	field_marker = {"White Point":2,"Red Primary":2,"Green Primary":2,"Blue Primary":2}
+	type_ = b"cHRM"
+	return process(file,field_marker,type_, "cHRM")
+
 def pHYs(file):
 	field_marker = {"Pixels per unit X axis":4,"Pixels per unit Y axis":4,
 				  "Unit specifier":1}
@@ -150,7 +156,7 @@ def tEXt(file):
 			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
 			status = "CRC tEXt FALSE"
 			if check in file:
-				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_])+" "+check.hex())
+				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_]))
 				status = "CRC tEXt TRUE"
 			else:
 				crc_list.append('Not Found')
@@ -213,7 +219,7 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"sBIT",b"tEXt",b"PLTE",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"pHYs"]
+	marker = [b"IHDR",b"sBIT",b"PLTE",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"cHRM",b"pHYs"]
 	header = 8
 	result += header
 	for i in marker:
@@ -221,6 +227,18 @@ def DATA(file):
 			data_length = int.from_bytes(file.split(i)[0][-4:],byteorder='big')
 			list_data.append("Panjang "+i.decode('ascii')+" : "+hex(data_length)[2:].rjust(8,'0'))
 			result += 4+4+data_length+4
+
+	text = file.split(b"tEXt")
+	for i in range(len(text)):
+		try:
+			size_ = text[i][-4:]
+			if size_.hex() != "ae426082":
+				list_data.append("Panjang tEXt "+str(i+1)+" : "+size_.hex())
+				data = 4+4+int(size_.hex(),16)+4
+				result += data
+		except:
+			pass
+			
 	idat = file.split(b"IDAT")
 	for i in range(len(idat)):
 		try:

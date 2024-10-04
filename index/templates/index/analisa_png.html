@@ -82,6 +82,10 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ gAMA|escapejs }}');
         process(app, 'gAMA signature','gAMA');
     }
+    function cHRM(){
+        let app = ('{{ cHRM|escapejs }}');
+        process(app, 'cHRM signature','cHRM');
+    }
     function pHYs(){
         let app = ('{{ pHYs|escapejs }}');
         process(app, 'pHYs signature','pHYs');
@@ -164,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function(){
     tIME();
     sRGB();
     gAMA();
+    cHRM();
     pHYs();
     tEXt();
     IEND();
