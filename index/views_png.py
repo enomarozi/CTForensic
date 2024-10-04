@@ -14,6 +14,8 @@ def analisaPNG(request, id_):
 		"signature":signature(file),
 		"IHDR":IHDR(file),
 		"bKGD":bKGD(file),
+		"PLTE":PLTE(file),
+		"tIME":tIME(file),
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
 		"pHYs":pHYs(file),
@@ -25,6 +27,7 @@ def analisaPNG(request, id_):
 		"DATA":DATA(file),
 		"otherData":otherData(file),
 	}
+	print(IDAT(file))
 	return render(request, 'index/analisa_png.html',context)
 
 def signature(file):
@@ -43,6 +46,17 @@ def bKGD(file):
 	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
 	field_marker = {"Background Color Data":length}
 	return process(file,field_marker, type_,"bKGD")
+
+def PLTE(file):
+	type_ = b"PLTE"
+	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
+	field_marker = {"Data PLTE":length}
+	return process(file,field_marker, type_,"PLTE")
+
+def tIME(file):
+	field_marker = {"Year":2,"Month":1,"Day":1,"Hour":1,"Minute":1,"Second":1}
+	type_ = b"tIME"
+	return process(file,field_marker,type_,"tIME")
 
 def sRGB(file):
 	field_marker = {"Rendering Intent":1}
@@ -70,7 +84,7 @@ def process(file, field_marker, type_, status_):
 	if type_ in file:
 		size_ = file.split(type_)[0][-4:]
 	else:
-		return "'Not Found'"
+		return ""
 	data_ = file.split(type_)[1][:int.from_bytes(size_,byteorder='big')]	
 	crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
 	status = "CRC "+status_+" FALSE"
@@ -101,7 +115,7 @@ def tEXt(file):
 			else:
 				crc_list.append('Not Found')
 		except:
-			pass
+			crc_list = ''
 	return crc_list
 def IDAT(file):
 	crc_list = []
@@ -159,7 +173,7 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"bKGD",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
+	marker = [b"IHDR",b"PLTE",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
 	header = 8
 	result += header
 	for i in marker:

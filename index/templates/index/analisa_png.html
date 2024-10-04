@@ -50,6 +50,14 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ bKGD|escapejs }}');
         process(app, 'bKGD signature','bKGD');
     }
+    function PLTE(){
+        let app = ('{{ PLTE|escapejs }}');
+        process(app, 'PLTE signature','PLTE');
+    }
+    function tIME(){
+        let app = ('{{ tIME|escapejs }}');
+        process(app, 'tIME signature','tIME');
+    }
     function sRGB(){
         let app = ('{{ sRGB|escapejs }}');
         process(app, 'sRGB signature','sRGB');
@@ -133,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function(){
     signature();
     IHDR();
     bKGD();
+    PLTE();
+    tIME();
     sRGB();
     gAMA();
     pHYs();
