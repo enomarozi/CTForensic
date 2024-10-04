@@ -27,27 +27,24 @@ def analisaJPG(request, id_):
         "string_printable":string_printable(file),
     }
     return render(request, 'index/analisa_jpg.html',context)
-
 def process(field, marker):
-    list_ = []
+    stringData = []
+    list_marker = ["Exif Identifier","Comment"]
     if marker:
         data = marker.split(' ')
         start, end = 0, 0
         for field,size in field.items():
             end += size
-            if field == "Exif Identifier":
-                _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>9 and int(i,16)<129])
-                list_.append(field+" : "+_bytes_)
-            elif field == "Comment":
-                _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>9 and int(i,16)<129])
-                list_.append(field+" : "+_bytes_)
+            if field in list_marker:
+                _bytes_ = ''.join([chr(int(i,16)) for i in data[start:end] if int(i,16)>=32 and int(i,16)<=126])
+                stringData.append(field+" : "+_bytes_)
             else:
                 try:                
-                    list_.append(field+" : "+str(int(''.join(data[start:end]),16)))
+                    stringData.append(field+" : "+str(int(''.join(data[start:end]),16)))
                 except:
-                    print(data[start:end])
+                    pass
             start += size
-        return list_
+        return stringData
     else:
         return None
 
@@ -61,23 +58,14 @@ def APP0(path_file):
              "Units for x/y densities":1,"X-density":2,"Y-density":2,
              "Thumbnail width":1,"Thumbnail height":1}
     return markerData(header, field, path_file)
-
 def APP1(path_file):
-    marker = ""
-    header = ["e1"]
-    field = {"Marker identifier":2,"Length":2,"Exif Identifier":0,
-             "Tiff Header":1,"IFD":1}
-
+    header = "e1"
     bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = head+""+bytes_.split(head)[1].split('ff')[0]
-            field['Exif Identifier'] = ((len(marker.replace(' ',''))-(field['Marker identifier']*2)-(field['Length']*2)) // 2)-2
-            break
-    result = process(field, marker)
-    return result
-
+    if "ff "+header in bytes_:
+        length_ = bytes_.split("ff "+header)[1].split('ff')[0][1:-1].split(' ')
+        field = {"Marker identifier":2,"Length":2,"Exif Identifier":len(length_)-2,
+             "Tiff Header":1,"IFD":1}
+        return markerData(header, field, path_file)
 def SOF(path_file):
     header = "c0"
     field = {"Marker identifier":2,"Length":2,"Data Precision":1,
@@ -107,9 +95,8 @@ def Comment(path_file):
     bytes_ = ' '.join(path_file)
     if "ff "+header in bytes_:
         length_ = bytes_.split("ff "+header)[1].split('ff')[0][1:-1].split(' ')
-    field = {"Marker identifier":2,"Length":2,"Comment":len(length_)-2}
-    return markerData(header, field, path_file)
-
+        field = {"Marker identifier":2,"Length":2,"Comment":len(length_)-2}
+        return markerData(header, field, path_file)
 def markerData(header, field, path_file):
     marker = ""
     bytes_ = ' '.join(path_file)
@@ -118,20 +105,18 @@ def markerData(header, field, path_file):
         marker = head+""+bytes_.split(head)[1].split('ff')[0]
     result = process(field, marker)
     return result
-
 def string_printable(path_file):
     result = ""
     data = ""
     for i in path_file:
-        c = int(i,16)
-        if chr(c) in letter:
-            result += chr(c)
+        c = chr(int(i,16))
+        if c in letter:
+            result += c
         else:
             if len(result) >= 5:
                 data += result+'\n'
             result = ''
     return data
-
 def steghideData(path_file):
     import subprocess
 
@@ -147,13 +132,10 @@ def steghideData(path_file):
             return "'Tidak ada file Tertanam'"
     except:
         return "'Steghide belum terinstall'"
-
 def Data(path_file):
-    header = ["d9"]
+    header = "d9"
     bytes_ = ' '.join(path_file)
-    for i in header:
-        head = "ff "+i
-        if head in bytes_:
-            marker = bytes_.split(head)[1].split(' ')
+    if "ff "+header in bytes_:
+        marker = bytes_.split("ff "+header)[1].split(' ')
     data = ''.join([chr(int(i,16)) for i in marker if i != ''])
     return data

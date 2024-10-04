@@ -35,17 +35,20 @@ document.addEventListener('DOMContentLoaded', function(){
         let status = "FALSE"
         if(app && app !== "None"){
             createElementData('File Signature','signature');
-            let arr = app.slice(1,-1).replace(/[', ]/g,"");
             let elementApp = document.getElementById('signature');
-            if(arr === "89504e470d0a1a0a"){
+            if(app === "89504e470d0a1a0a"){
                 status = "TRUE"
             }
-            elementApp.innerText += "Marker identifier : "+arr+" "+status;
+            elementApp.innerText += "Marker identifier : "+app+" "+status;
         }
     }
     function IHDR(){
         let app = ('{{ IHDR|escapejs }}');
         process(app, 'IHDR signature','IHDR');
+    }
+    function bKGD(){
+        let app = ('{{ bKGD|escapejs }}');
+        process(app, 'bKGD signature','bKGD');
     }
     function sRGB(){
         let app = ('{{ sRGB|escapejs }}');
@@ -117,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function otherData(){
         let app = ('{{ otherData|escapejs }}');
+        console.log(app)
         if(app && app !== "None"){
             createElementData('Data Lain','otherData');
             let elementApp = document.getElementById('otherData');
@@ -128,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     signature();
     IHDR();
+    bKGD();
     sRGB();
     gAMA();
     pHYs();

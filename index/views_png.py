@@ -13,6 +13,7 @@ def analisaPNG(request, id_):
 		"title":"Analysis PNG",
 		"signature":signature(file),
 		"IHDR":IHDR(file),
+		"bKGD":bKGD(file),
 		"sRGB":sRGB(file),
 		"gAMA":gAMA(file),
 		"pHYs":pHYs(file),
@@ -27,7 +28,7 @@ def analisaPNG(request, id_):
 	return render(request, 'index/analisa_png.html',context)
 
 def signature(file):
-	marker = [hex(i)[2:].rjust(2,'0') for i in file[:8]]
+	marker = file[:8].hex()
 	return marker
 
 def IHDR(file):
@@ -36,7 +37,13 @@ def IHDR(file):
 				"Enclacement Method":1}
 	type_ = b"IHDR"
 	return process(file,field_marker, type_, "IHDR")
-	
+
+def bKGD(file):
+	type_ = b"bKGD"
+	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
+	field_marker = {"Background Color Data":length}
+	return process(file,field_marker, type_,"bKGD")
+
 def sRGB(file):
 	field_marker = {"Rendering Intent":1}
 	type_ = b"sRGB"
@@ -79,25 +86,6 @@ def process(file, field_marker, type_, status_):
 			list.append("Data : null")
 		start += size
 	return ("Marker identifier : "+type_.decode('ascii'),list,hex(crc_)[2:]+" "+status)
-
-def IDAT(file):
-	crc_list = []
-	idat = file.split(b"IDAT")
-	for i in range(len(idat)):
-		try:
-			size_ = idat[i][-4:]
-			type_ = b"IDAT"
-			data_ = idat[i+1][:int.from_bytes(size_, byteorder='big')]
-			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
-			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
-			if check in file:
-				crc_list.append(''.join([hex(j)[2:].rjust(2,'0') for j in check]))
-			else:
-				crc_list.append(''.join([hex(j)[2:].rjust(2,'0') for j in check])+" Not Found")
-		except:
-			pass
-	return crc_list
-
 def tEXt(file):
 	crc_list = []
 	text = file.split(b"tEXt")
@@ -109,9 +97,26 @@ def tEXt(file):
 			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
 			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
 			if check in file:
-				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_])+" "+hex(crc_)[2:])
+				crc_list.append(''.join([chr(i) if i>0 else " : " for i in data_])+" "+check.hex())
 			else:
 				crc_list.append('Not Found')
+		except:
+			pass
+	return crc_list
+def IDAT(file):
+	crc_list = []
+	idat = file.split(b"IDAT")
+	for i in range(len(idat)):
+		try:
+			size_ = idat[i][-4:]
+			type_ = b"IDAT"
+			data_ = idat[i+1][:int.from_bytes(size_, byteorder='big')]
+			crc_ = binascii.crc32(type_+data_) & 0xFFFFFFFF
+			check = bytes.fromhex(hex(crc_)[2:].rjust(8,'0'))
+			if check in file:
+				crc_list.append("Panjang IDAT "+str(i+1)+" : "+check.hex())
+			else:
+				crc_list.append("Panjang IDAT "+str(i+1)+" : "+check.hex()+" Not Found")
 		except:
 			pass
 	return crc_list
@@ -154,26 +159,27 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
+	marker = [b"IHDR",b"bKGD",b"sRGB",b"gAMA",b"pHYs",b"tEXt"]
 	header = 8
 	result += header
 	for i in marker:
 		if i in file:
 			data_length = int.from_bytes(file.split(i)[0][-4:],byteorder='big')
+			list_data.append("Panjang "+i.decode('ascii')+" : "+hex(data_length)[2:].rjust(8,'0'))
 			result += 4+4+data_length+4
 	idat = file.split(b"IDAT")
 	for i in range(len(idat)):
 		try:
 			size_ = idat[i][-4:]
 			if size_.hex() != "ae426082":
-				list_data.append(size_.hex())
+				list_data.append("Panjang IDAT "+str(i+1)+" : "+size_.hex())
 				data = 4+4+int(size_.hex(),16)+4
 				result += data
-
 		except:
 			pass
 	footer = 12
 	result += footer
+	list_data.append("Panjang EOF : "+hex(footer)[2:].rjust(8,'0'))
 	if result == len(file):
 		return (list_data,"Panjang bytes file : "+str(result)+" Panjang bytes file sesuai")
 	else:
@@ -181,4 +187,4 @@ def DATA(file):
 
 def otherData(path_file):
     data = path_file.split(b'IEND')
-    return data[1][4:]
+    return data[1][4:].decode('ascii')
