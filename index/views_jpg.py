@@ -13,6 +13,7 @@ def analisaJPG(request, id_):
     file = [hex(i)[2:].rjust(2,'0') for i in open(path_file,"rb").read()]
     context = {
         "title":"Analysis JPG",
+        "image_url":"/"+path_file,
         "SOI":SOI(file),
         "APP0":APP0(file),
         "APP1":APP1(file),

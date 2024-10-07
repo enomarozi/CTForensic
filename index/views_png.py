@@ -11,6 +11,7 @@ def analisaPNG(request, id_):
 	file = open(path_file,"rb").read()
 	context = {
 		"title":"Analysis PNG",
+		"image_url":"/"+path_file,
 		"signature":signature(file),
 		"IHDR":IHDR(file),
 		"oFFs":oFFs(file),
