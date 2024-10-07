@@ -13,10 +13,12 @@ def analisaPNG(request, id_):
 		"title":"Analysis PNG",
 		"signature":signature(file),
 		"IHDR":IHDR(file),
+		"oFFs":oFFs(file),
 		"sBIT":sBIT(file),
 		"bKGD":bKGD(file),
 		"PLTE":PLTE(file),
 		"tRNS":tRNS(file),
+		"iCCP":iCCP(file),
 		"iTXt":iTXt(file),
 		"tIME":tIME(file),
 		"sRGB":sRGB(file),
@@ -58,6 +60,11 @@ def sBIT(file):
 	
 	return process(file,field_marker, type_, "sBIT")
 
+def oFFs(file):
+	type_ = b"oFFs"
+	field_marker = {"X-Offset":4,"Y-Offset":4,"Width":4,"Height":4}
+	return process(file, field_marker, type_, "oFFs")
+
 def bKGD(file):
 	type_ = b"bKGD"
 	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
@@ -74,7 +81,17 @@ def tRNS(file):
 	type_ = b"tRNS"
 	length = int.from_bytes(file.split(type_)[0][-4:],byteorder='big')
 	field_marker = {"Data tRNS":length}
-	return process(file,field_marker,type_,"tRNS")
+	return process(file, field_marker, type_,"tRNS")
+
+def iCCP(file):
+	type_ = b"iCCP"
+	if type_ in file:
+		length_profile = file.split(type_)[1].split(b"\x00")[0]
+		length_data = int.from_bytes(file.split(type_)[0][-4:],byteorder='big') - len(length_profile) - 1
+		field_marker = {"Profile Name":len(length_profile)+1,"Compression Method":1,"Profile Data":length_data}
+		return process(file, field_marker, type_, "iCCP")
+	else:
+		return None
 
 def iTXt(file):
 	type_ = b"iTXt"
@@ -115,7 +132,7 @@ def IEND(file):
 
 def process(file, field_marker, type_, status_):
 	list = []
-	ascii_list = ["Data iTXt"]
+	ascii_list = ["Data iTXt","Profile Name"]
 	hexa_list = ["Data tRNS","Data PLTE"]
 	if type_ in file:
 		size_ = file.split(type_)[0][-4:]
@@ -219,7 +236,7 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"sBIT",b"PLTE",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"cHRM",b"pHYs"]
+	marker = [b"IHDR",b"sBIT",b"oFFs",b"PLTE",b"iCCP",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"cHRM",b"pHYs"]
 	header = 8
 	result += header
 	for i in marker:

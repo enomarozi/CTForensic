@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function(){
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
         const Y_scroll = ["lsb", "msb","otherData"];
-        const X_scroll = ["PLTE", "tRNS"];
+        const X_scroll = ["PLTE", "tRNS","iCCP"];
         const Y_scrollContaint = Y_scroll.some(keyword => id_.includes(keyword));
         const X_scrollContaint = X_scroll.some(keyword => id_.includes(keyword));
         if(Y_scrollContaint){
@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', function(){
     function IHDR(){
         let app = ('{{ IHDR|escapejs }}');
         process(app, 'IHDR signature','IHDR');
+    }
+    function oFFs(){
+        let app = ('{{ oFFs|escapejs }}');
+        process(app, 'oFFs signature','oFFs');
+    }
+    function iCCP(){
+        let app = ('{{ iCCP|escapejs }}');
+        process(app, 'iCCP signature','iCCP');
     }
     function sBIT(){
         let app = ('{{ sBIT|escapejs }}');
@@ -160,6 +168,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     signature();
     IHDR();
+    oFFs();
+    iCCP();
     sBIT();
     bKGD();
     PLTE();
