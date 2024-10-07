@@ -46,7 +46,12 @@ def process(file,header,start_):
 	return marker
 
 def colorTable(file):
-	marker = []
-	for i in file[55:245+55]:
-	 	marker.append(hex(i)[2:].rjust(2,'0'))
-	return marker
+	len_color = len(file[54:len(file)])
+	width = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[18:22]][::-1]),16)
+	height = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[22:26]][::-1]),16)
+	bit = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[28:30]][::-1]),16)
+	calc = (width*height*(bit//8))+(width+height)
+	if calc == len_color:
+		return "'Image Color Table Sesuai'"
+	else:
+		return "'Image Color Table Tidak Sesuai, Size Header "+str(calc)+" Sedangkan True Color "+str(len_color)+"'"
