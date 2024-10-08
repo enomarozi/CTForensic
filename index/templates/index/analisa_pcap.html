@@ -1,0 +1,92 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+<h5 class='h5'>Metadata</h5><br>
+    <label class='form-label'>Nama File : {{ metadata.name }}</label><br>
+    <label class='form-label'>Size File : {{ metadata.size }}</label><br>
+    <label class='form-label'>Ext File : {{ metadata.pcap_file }}</label><br>
+    <hr class="mt-1 mb-5"></hr>
+    <h5 class='h5'>Analysis</h5><br>
+    <label class='form-label'>Summary : {{ summary }}</label><br>
+    <label class='form-label' id='packet'>Total Packet : </label>
+    <form id="formCheckPacket" method="GET">
+        {% csrf_token %}
+        <input type="hidden" value="{{id_}}" id="id_" name="id" required>
+        <div class='form-group'>
+            <select class='form-control' id="ipaddress" onchange="displayTotal()">
+                <option value="" selected disabled hidden>Selected IP Source & Destination</option>
+                {% for i in ip %}
+                    <option value="{{i}}">{{i}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    <div class='name-header'>
+        <h4>Details Packet</h4>
+        <textarea class="form-control" id="detailsPacket" rows="1"></textarea>
+    </div>
+    <div class='name-header'>
+        <h4>Bytes Packet</h4>
+        <textarea class="form-control" id="bytesPacket" rows="10"></textarea>
+    </div>
+    <div class='name-header'>
+        <h4>Encode Packet</h4>
+        <textarea class="form-control" id="encodePacket" rows="10"></textarea>
+    </div>
+    
+    
+    <script>
+        function displayTotal() {
+            var selectedIpPair = document.getElementById("ipaddress").value;
+            var data = {
+                {% for ip_pair, number in ip.items %}
+                    "{{ ip_pair }}": "{{ number }}",
+                {% endfor %}
+            };
+
+            var resultDiv = document.getElementById("packet");
+            if (selectedIpPair in data) {
+                resultDiv.textContent = "Total Packet: " + data[selectedIpPair];
+                let ipAddress = document.getElementById("ipaddress").value;
+                let id_ = document.getElementById("id_").value;
+                let xhr = new XMLHttpRequest();
+                let url = `/checkPacket?ip=${ipAddress}&id=${id_}`;
+                xhr.open("GET", url, true);
+                xhr.onload = function(){
+                    if(xhr.status >= 200 && xhr.status < 400){
+                        let data = JSON.parse(xhr.responseText)
+                        document.getElementById('detailsPacket').innerHTML = data.type+" Packet, Source Port : "+data.sport+", Destination Port : "+data.dport;
+                        document.getElementById('encodePacket').innerHTML = data.bytes_data_encode;
+                        document.getElementById('bytesPacket').innerHTML = base64Decode(data.bytes_data_encode);
+                    }else{
+                        console.error("Request Error!!");
+                    }
+                };
+                xhr.onerror = function(){
+                    console.error("Request failed");
+                };
+                xhr.send();
+            } else {
+                resultDiv.textContent = "Select an IP Pair";
+            }
+        }
+
+        function base64Decode(base64Str) {
+            const list = ["====", "===", "==", "="];
+            let result = "";
+            for(let i of list){
+                if(base64Str.includes(i)){
+                    data = base64Str.split(i);
+                    for(let j of data){
+                        result += atob(j)
+                    }
+                    return result;
+                }            
+            }
+            return atob(base64Str);
+        }
+    </script>
+</div>
+{% endblock content %}
