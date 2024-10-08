@@ -8,6 +8,7 @@ def analisaBMP(request, id_):
 	file = open(path_file,"rb").read()
 	context = {
 		"title":"Analysis BMP",
+		"image_url":"/"+path_file,
 		"headerBMP": headerBMP(file),
 		"infoHeaderBMP": infoHeaderBMP(file),
 		"colorTable":colorTable(file),

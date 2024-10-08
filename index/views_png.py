@@ -277,4 +277,4 @@ def DATA(file):
 
 def otherData(path_file):
     data = path_file.split(b'IEND')
-    return data[1][4:].decode('ascii')
+    return data[1][4:]
