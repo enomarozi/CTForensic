@@ -2,40 +2,41 @@
 {% load static %}
 {% block content %}
 <div class="container mt-4">
-<h5 class='h5'>Metadata</h5><br>
+<h5 class='h5'>Metadata</h5>
     <label class='form-label'>Nama File : {{ metadata.name }}</label><br>
     <label class='form-label'>Size File : {{ metadata.size }}</label><br>
     <label class='form-label'>Ext File : {{ metadata.format }}</label><br>
-    <hr class="mt-1 mb-5"></hr>
-    <h5 class='h5'>Analysis</h5><br>
+    <hr class="mt-2 mb-4"></hr>
+    <h5 class='h5'>Packets</h5>
     <label class='form-label'>Summary : {{ summary }}</label><br>
-    <label class='form-label' id='packet'>Total Packet : </label>
+    <hr class="mt-2 mb-4"></hr>
+    <h5 class='h5'>Stream Packets</h5>
     <form id="formCheckPacket" method="GET">
         {% csrf_token %}
         <input type="hidden" value="{{id_}}" id="id_" name="id" required>
         <div class='form-group'>
-            <select class='form-control' id="ipaddress" onchange="displayTotal()">
-                <option value="" selected disabled hidden>Selected IP Source & Destination</option>
-                {% for i in ip %}
-                    <option value="{{i}}">{{i}}</option>
-                {% endfor %}
-            </select>
+            <div class="mb-3">
+                <select class='form-select' id="ipaddress" onchange="displayTotal()">
+                    <option value="" selected disabled hidden>Selected IP Source & Destination</option>
+                    {% for i in ip %}
+                        <option value="{{i}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class='form-label' id='packet'>Total Packet : </label>
+            </div>
         </div>
     </form>
 
-    <div class='name-header'>
+    <div class='form-label h4'>
         <h4>Details Packet</h4>
         <textarea class="form-control" id="detailsPacket" rows="1"></textarea>
     </div>
-    <div class='name-header'>
+    <div class='form-label h4'>
         <h4>Bytes Packet</h4>
         <textarea class="form-control" id="bytesPacket" rows="10"></textarea>
-    </div>
-    <div class='name-header'>
-        <h4>Encode Packet</h4>
-        <textarea class="form-control" id="encodePacket" rows="10"></textarea>
-    </div>
-    
+    </div>    
     
     <script>
         function displayTotal() {
@@ -58,8 +59,7 @@
                     if(xhr.status >= 200 && xhr.status < 400){
                         let data = JSON.parse(xhr.responseText)
                         document.getElementById('detailsPacket').innerHTML = data.type+" Packet, Source Port : "+data.sport+", Destination Port : "+data.dport;
-                        document.getElementById('encodePacket').innerHTML = data.bytes_data_encode;
-                        document.getElementById('bytesPacket').innerHTML = base64Decode(data.bytes_data_encode);
+                        document.getElementById('bytesPacket').innerHTML = data.bytes_data_encode.slice(2,-1);
                     }else{
                         console.error("Request Error!!");
                     }
@@ -71,21 +71,6 @@
             } else {
                 resultDiv.textContent = "Select an IP Pair";
             }
-        }
-
-        function base64Decode(base64Str) {
-            const list = ["====", "===", "==", "="];
-            let result = "";
-            for(let i of list){
-                if(base64Str.includes(i)){
-                    data = base64Str.split(i);
-                    for(let j of data){
-                        result += atob(j)
-                    }
-                    return result;
-                }            
-            }
-            return atob(base64Str);
         }
     </script>
 </div>

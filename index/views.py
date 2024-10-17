@@ -32,7 +32,8 @@ def signatureFile(file):
 				 bytes.fromhex("49484452"):"png",
 				 bytes.fromhex("FFD8"):"jpg",
 				 bytes.fromhex("424D"):"bmp",
-				 bytes.fromhex("D4C3B2A1"):"pcap"}
+				 bytes.fromhex("D4C3B2A1"):"pcap",
+				 bytes.fromhex("0A0D0D0A"):"pcapng",}
 	for key,value in signature.items():
 		if key in file[:20]:
 			return value

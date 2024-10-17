@@ -12,8 +12,8 @@ def analisaPCAP(request, id_):
 	context = {
 		'id_':id_,
 		"title":"Analysis PCAP",
-		'metadata':fileName,
 		'summary': summary_data[1]+" "+summary_data[2]+" "+summary_data[3]+" "+summary_data[4][:-1],
+		'metadata':fileName,
 		'ip': getIP(packets)
 	}
 	return render(request, 'index/analisa_pcap.html', context)
@@ -43,38 +43,38 @@ def checkPacket(request):
 			'type':bytesData(packets,ip_address)[3],
 			'sport':bytesData(packets,ip_address)[0],
 			'dport':bytesData(packets,ip_address)[1],
-			'bytes_data_encode':bytesData(packets,ip_address)[2],
+			'bytes_data_encode':str(bytesData(packets,ip_address)[2]),
 		}
-		return JsonResponse(response_data,safe=False)
+		return JsonResponse(response_data)
 
 def bytesData(packets,ip_address):
 	result = ""
 	ip_src, ip_dst = ip_address.split("-")
 	sport, dport, type_ = set(),set(),set()
+	result_byte = b''
 	for i in packets:
 		try:
 			if ":" in ip_src or ":" in ip_dst:
 				if i[IPv6].src == ip_src and i[IPv6].dst == ip_dst:
-					raw_data_base64 = base64.b64encode(i[Raw].load).decode('utf-8')
+					result_byte = i[Raw].load
 					sport.add(i[IPv6].sport)
 					dport.add(i[IPv6].dport)
 					if "TCP" in i[IPv6]:
 						type_.add("TCP")
 					elif "UDP" in i[IPv6]:
 						type_.add("UDP")
-					result += raw_data_base64
+					result_byte += raw_data_base64
 			elif "." in ip_src or "." in ip_dst:
 				if i[IP].src == ip_src and i[IP].dst == ip_dst:
-					raw_data_base64 = base64.b64encode(i[Raw].load).decode('utf-8')
+					result_byte = i[Raw].load
 					sport.add(i[IP].sport)
 					dport.add(i[IP].dport)
 					if "TCP" in i[IP]:
 						type_.add("TCP")
 					elif "UDP" in i[IP]:
 						type_.add("UDP")
-					result += raw_data_base64
+					result_byte += i[Raw].load
 
-			
 		except Exception as e:
 			pass
 	if len(sport) == 0:
@@ -83,9 +83,4 @@ def bytesData(packets,ip_address):
 		dport.add("Tidak ada port")
 	if len(type_) == 0:
 		type_.add("Others")
-	return (list(sport)[0],list(dport)[0],result,list(type_))
-
-def getPcap(request):
-	file_pcap = ImageFile.objects.all().values('id','name','size','format')
-	data = list(file_pcap)
-	return JsonResponse(data,safe=False)
+	return (list(sport)[0],list(dport)[0],result_byte,list(type_))
