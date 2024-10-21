@@ -2,7 +2,7 @@
 	width: 20%;
 	margin: 13% 40% 0 40%;
 	padding: 1%;
-	background-color: #e6e6e6;
+	background-color: #f0f2f5;
 	box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
 }
 .logo{
@@ -27,4 +27,7 @@ input[type="submit"]{
 	width: 20%;
 	margin: 0 40% 0 40%;
 	text-align: center;
+}
+.title-pengaturan{
+	margin-bottom: 20px;
 }

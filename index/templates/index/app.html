@@ -4,13 +4,23 @@
 <link rel="icon" href="{% static '/img/icon.png' %}" type="image/x-icon">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<header class='header_grid'>
-	<img src="{% static '/img/logo.png' %}" width="100%">
-	<div></div>
-	<a class='btn btn-warning py-3' href="{% url 'cleanData' %}">Clear Uploads</a>
-	<div></div>
-	<a class='btn btn-danger py-3' href="{% url 'keluar' %}">Keluar</a>
+<header class="topbar d-flex justify-content-between align-items-center p-3">
+    <a href="{% url 'index' %}">
+	    <img src="{% static 'img/logo.png' %}" width="30%" alt="Logo">
+	</a>
+    <div class="dropdown">
+        <button class="btn btn-account" type="button" id="dropdownAccount" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user }} <i class="fas fa-user-circle dark-icon fa-2x" style="vertical-align: middle;"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+            <li><a class="dropdown-item" href="{% url 'pengaturan' %}">Setting</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'cleanData' %}">Clear Data</a></li>
+            <li><a class="dropdown-item" href="{% url 'keluar' %}">Logout</a></li>
+        </ul>
+    </div>
 </header>
+
 <title>{{ title }}</title>
 {% block content %}
 

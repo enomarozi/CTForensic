@@ -1,0 +1,32 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<link href="{% static 'native/css/login.css' %}" rel="stylesheet" crossorigin="anonymous">
+<div class="container-fluid">
+    <div class="mb-4 center-login">
+    	<h4 class="title text-center title-pengaturan">Ganti Password</h4>
+        <form method="POST" action="{% url 'pengaturan' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.password_sekarang }}
+            </div>
+            <div class="form-group">
+                {{ form.password_baru }}
+            </div>
+            <div class="form-group">
+                {{ form.password_konfirmasi }}
+            </div>
+            <div class="col">
+                <input class="btn btn-primary" type="submit" name="submit" value="SIMPAN">
+            </div>
+        </form>
+    </div>
+    {% if form.non_field_errors %}
+        <div class="error text-center alert-danger alert">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

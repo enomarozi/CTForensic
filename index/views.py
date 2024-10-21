@@ -22,6 +22,7 @@ def index(request):
 			)
 			return redirect('index')
 		context = {
+			"user":request.user,
 			"title":"Dashboard",
 		}
 		return render(request,'index/index.html',context)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
-from .forms import CustomAuthenticationForm, RegistrasiForm
+from .forms import CustomAuthenticationForm, RegistrasiForm, PengaturanForm
 from datetime import datetime
 
 def masuk(request):
@@ -50,6 +50,27 @@ def registrasi(request):
 	else:
 		form = RegistrasiForm()
 	return render(request, 'account/registrasi.html',{'form':form})
+
+def pengaturan(request):
+	if request.user.is_authenticated:
+		form = PengaturanForm(request.POST)
+		if form.is_valid():
+			password1 = form.cleaned_data.get("password_sekarang")
+			password2 = form.cleaned_data.get("password_baru")
+			password3 = form.cleaned_data.get("password_konfirmasi")
+			if request.user.check_password(password1):
+				request.user.set_password(password3)
+				request.user.save()
+				update_session_auth_hash(request, request.user)
+				messages.success(request,"Password berhasil diubah.")
+			else:
+				form.add_error("password_sekarang", "Password sekarang salah.")
+		else:
+			form.add_error('password_konfirmasi', "Password baru dan konfirmasi password tidak cocok.")
+		return render(request, 'account/pengaturan.html', {'form': form})
+	else:
+		form = PengaturanForm()
+	return render(request, 'account/pengaturan.html',{'form':form})
 
 def keluar(request):
 	logout(request)
