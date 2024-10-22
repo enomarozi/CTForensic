@@ -22,11 +22,3 @@ class PengaturanForm(forms.Form):
 	password_sekarang = forms.CharField(label="Password",max_length=50,widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Password Sekarang'}))
 	password_baru = forms.CharField(label="Password",max_length=50,widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Password Baru'}))
 	password_konfirmasi = forms.CharField(label="Password",max_length=50,widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Password Konfirmasi'}))
-
-	def clean(self):
-	    cleaned_data = super().clean()
-	    password_baru = cleaned_data.get("password_baru")
-	    password_konfirmasi = cleaned_data.get("password_konfirmasi")
-
-	    if password_baru and password_baru != password_konfirmasi:
-	        raise forms.ValidationError("Password baru dan konfirmasi password tidak cocok.")

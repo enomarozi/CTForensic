@@ -40,13 +40,13 @@ def registrasi(request):
 					user = User(username=username, email=email, date_joined=today)
 					user.password = make_password(password2)
 					user.save()
-					messages.success(request, "Pendaftaran Berhasil, Silakan Coba Masuk")
+					messages.success(request, "Pendaftaran Berhasil, Silakan Coba Masuk.")
 				else:
-					message.error(request, "Pendaftaran Gagal", "Password Tidak Sama dengan Konfirmasi Password")
+					message.error(request, "Pendaftaran Gagal", "Password Tidak Sama dengan Konfirmasi Password.")
 			else:
-				messages.error(request, "Pendaftaran Gagal, Panjang Password minimal 8 Karakter")
+				messages.error(request, "Pendaftaran Gagal, Panjang Password minimal 8 Karakter.")
 		else:
-			messages.error(request, "Pendaftaran Gagal, Pastikan lagi Inputannya")
+			messages.error(request, "Pendaftaran Gagal, Pastikan lagi Inputannya.")
 	else:
 		form = RegistrasiForm()
 	return render(request, 'account/registrasi.html',{'form':form})
@@ -55,23 +55,32 @@ def pengaturan(request):
 	if request.user.is_authenticated:
 		form = PengaturanForm(request.POST)
 		if form.is_valid():
-			password1 = form.cleaned_data.get("password_sekarang")
-			password2 = form.cleaned_data.get("password_baru")
-			password3 = form.cleaned_data.get("password_konfirmasi")
-			if request.user.check_password(password1):
-				request.user.set_password(password3)
-				request.user.save()
-				update_session_auth_hash(request, request.user)
-				messages.success(request,"Password berhasil diubah.")
+			password_sekarang = form.cleaned_data.get("password_sekarang")
+			password_baru = form.cleaned_data.get("password_baru")
+			password_konfirmasi = form.cleaned_data.get("password_konfirmasi")
+			if request.user.check_password(password_sekarang):
+				if password_baru == password_konfirmasi:
+					request.user.set_password(password_konfirmasi)
+					request.user.save()
+					update_session_auth_hash(request, request.user)
+					messages.success(request,"Password berhasil diubah.")
+				else:
+					messages.error(request, "Password baru dan konfirmasi password tidak cocok.")
 			else:
-				form.add_error("password_sekarang", "Password sekarang salah.")
+				messages.error(request, "Password sekarang salah.")
 		else:
-			form.add_error('password_konfirmasi', "Password baru dan konfirmasi password tidak cocok.")
-		return render(request, 'account/pengaturan.html', {'form': form})
+			form = PengaturanForm()
+
+		context = {
+		    'title': "Ganti Password",
+		    'form': form,
+		}	
+		return render(request, 'account/pengaturan.html', context)
 	else:
-		form = PengaturanForm()
-	return render(request, 'account/pengaturan.html',{'form':form})
+		form = CustomAuthenticationForm()
+	return render(request, 'account/masuk.html',{'form':form})
 
 def keluar(request):
-	logout(request)
+	if request.user.is_authenticated:
+		logout(request)
 	return HttpResponseRedirect(reverse('masuk'))
