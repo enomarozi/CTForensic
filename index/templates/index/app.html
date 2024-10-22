@@ -25,5 +25,19 @@
 {% block content %}
 
 {% endblock content %}
+{% if messages %}
+    {% for message in messages %}
+        	{% if message.tags == 'error'%}
+        		<div class='alert alert-danger'>
+            		{{ message }}
+            	</div>
+            {% else %}
+            	<div class='alert alert-success'>
+            		{{ message }}
+            	</div>
+            {% endif %}
+        
+    {% endfor %}
+{% endif %}
 <script type="text/javascript" charset="utf8" src="{% static 'bootstrap/js/jquery.dataTables.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>

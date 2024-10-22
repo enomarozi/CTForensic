@@ -21,19 +21,5 @@
             </div>
         </form>
     </div>
-    {% if messages %}
-        {% for message in messages %}
-            	{% if message.tags == 'error'%}
-            		<div class='alert alert-danger'>
-                		{{ message }}
-                	</div>
-                {% else %}
-                	<div class='alert alert-success'>
-                		{{ message }}
-                	</div>
-                {% endif %}
-            
-        {% endfor %}
-    {% endif %}
 </div>
 {% endblock content %}

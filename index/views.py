@@ -65,7 +65,9 @@ def getData(request):
 	return JsonResponse(data, safe=False)
 
 def deleteData(request, id_):
-	data = ImageFile.objects.get(id=id_)
-	os.system("rm uploads/"+data.name)
-	data.delete()
-	return HttpResponseRedirect(reverse('index'))
+	if request.user.is_authenticated:
+		data = ImageFile.objects.get(id=id_)
+		os.system("rm uploads/"+data.name)
+		data.delete()
+		return HttpResponseRedirect(reverse('index'))
+	return HttpResponseRedirect(reverse('masuk'))
