@@ -5,8 +5,6 @@ from django.urls import reverse
 from .forms import UploadFileForm
 from .models import ImageFile
 import os
-from . import views_jpg, views_png
-
 
 def index(request):
 	if request.user.is_authenticated:
@@ -34,7 +32,10 @@ def signatureFile(file):
 				 bytes.fromhex("FFD8"):"jpg",
 				 bytes.fromhex("424D"):"bmp",
 				 bytes.fromhex("D4C3B2A1"):"pcap",
-				 bytes.fromhex("0A0D0D0A"):"pcapng",}
+				 bytes.fromhex("0A0D0D0A"):"pcapng",
+				 bytes.fromhex("504B0304"):"zip",
+				 bytes.fromhex("526172211A0700"):"rar",
+				 bytes.fromhex("526172211A070100"):"rar",}
 	for key,value in signature.items():
 		if key in file[:20]:
 			return value

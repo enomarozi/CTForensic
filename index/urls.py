@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, views_jpg, views_png, views_bmp, views_pcap
+from . import views, views_jpg, views_png, views_bmp, views_pcap, views_zip
 
 urlpatterns = [
 	path('',views.index, name='index'),
@@ -12,4 +12,5 @@ urlpatterns = [
 	path('analisabmp/<int:id_>/',views_bmp.analisaBMP, name='analisaBMP'),
 	path('analisapcap/<int:id_>/',views_pcap.analisaPCAP, name='analisaPCAP'),
 	path('analisapcapng/<int:id_>/',views_pcap.analisaPCAP, name='analisaPCAPNG'),
+	path('analisazip/<int:id_>/',views_zip.analisaZIP, name='analisaZIP'),
 ]

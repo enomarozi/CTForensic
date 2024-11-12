@@ -1,0 +1,57 @@
+{% extends "index/app.html" %}
+{% load static %}
+{% block content %}
+<style type="text/css">
+    .btn-secondary{
+        margin-left: 5px;
+    }
+    #datavalue,#stringvalue{
+         overflow: scroll;
+         height: 250px;
+    }
+</style>
+<div class="container mt-4">
+    <div class="mb-3" id='container-data'>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	function createElementData(title_, id_){
+        const container = document.getElementById('container-data');
+        const title = document.createElement('label');
+        title.setAttribute('class','form-label h4');
+        title.textContent = title_;
+        container.appendChild(title);
+        const label = document.createElement('label');
+        label.setAttribute('class','form-control');
+        const Y_scroll = ["lsb", "msb","otherData"];
+        const X_scroll = ["PLTE", "tRNS","iCCP"];
+        const Y_scrollContaint = Y_scroll.some(keyword => id_.includes(keyword));
+        const X_scrollContaint = X_scroll.some(keyword => id_.includes(keyword));
+        if(Y_scrollContaint){
+            label.style.overflowY = 'scroll';
+            label.style.height = '250px';
+        }else if(X_scrollContaint){
+            label.style.overflowX = 'scroll';
+        }
+        label.setAttribute('id',id_);
+        container.appendChild(label);
+
+    }
+    function signature(){
+        let app = ('{{ signature|escapejs }}');
+        let status = "FALSE"
+        if(app && app !== "None"){
+            createElementData('File Signature','signature');
+            let elementApp = document.getElementById('signature');
+            if(app === "504B0304"){
+                status = "TRUE"
+            }
+            elementApp.innerText += "Marker identifier : "+app+" "+status;
+        }
+    }
+
+    signature();
+});
+</script>
+{% endblock content %}
