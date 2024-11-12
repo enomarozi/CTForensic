@@ -18,7 +18,7 @@
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			<div class="mb-3">
-				<label for="formFileMultiple" class="form-label">Input File <b>JPG,PNG,BMP,GIF,PCAP dan PCAPNG</b></label>
+				<label for="formFileMultiple" class="form-label">Input File <b>JPG,PNG,BMP And GIF <label id="showMoreBtn" class="text-decoration-underline fw-bold" style="cursor: pointer; color: blue;">Show More</label></b></label>
 			</div>
 			<input class="form-control" type="file" name="file" required>
 			<div class="upload-submit">
@@ -26,6 +26,35 @@
 			</div>
 		</form>
 	</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Extension Support</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>JPG</li>
+                        <li>PNG</li>
+                        <li>BMP</li>
+                        <li>GIF</li>
+                        <li>PCAP</li>
+                        <li>PCAPNG</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const showMoreBtn = document.getElementById('showMoreBtn');
+        const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+
+        showMoreBtn.addEventListener('click', function() {
+            myModal.show();
+        });
+    </script>
 	<table id="statusTable" class="table table-striped">
         <thead>
             <tr>
@@ -62,7 +91,6 @@
     });
     </script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 
 </div>
 {% endblock content %}
