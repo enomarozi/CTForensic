@@ -38,20 +38,19 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(label);
 
     }
-    function signature(){
-        let app = ('{{ signature|escapejs }}');
-        let status = "FALSE"
+    function fileHeader(){
+        let app = ('{{ fileHeader|escapejs }}');
+        console.log(app);
         if(app && app !== "None"){
-            createElementData('File Signature','signature');
-            let elementApp = document.getElementById('signature');
-            if(app === "504B0304"){
-                status = "TRUE"
-            }
-            elementApp.innerText += "Marker identifier : "+app+" "+status;
+            createElementData('File Headers','headers');
+            let elementApp = document.getElementById('headers');
+            let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            });
         }
     }
-
-    signature();
+    fileHeader();
 });
 </script>
 {% endblock content %}

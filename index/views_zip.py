@@ -40,19 +40,24 @@ def fileHeader(file):
 
     start,end = 0,0
     status = ""
+    r_result = []
     for field,size in field.items():
         end += size
         value = ''.join([i[::-1] for i in file[start:end]])
         if field in ascii_convert:
             result = ''.join([chr(int(value[:i][-2:][::-1],16)) for i in range(2,len(value)+2,2)])
-            print(field+" :",result)
+            r_result.append(field+" : "+str(result))
         elif field in int_convert:
             if field == "Flags":
                 status = Flags[int(value[::-1],16)]
             elif field == "Compression":
                 status = Compression_Method[int(value[::-1],16)]
-            print(field+" :",int(value[::-1],16),status)
+            r_result.append(field+" : "+str(int(value[::-1],16))+" "+status)
+        elif field in hexa_convert:
+            data = ''.join([value[:i][-2:][::-1] for i in range(2,len(value)+2,2)])
+            r_result.append(field+" : "+str(data))
         else:
-            print(field+" :",value[::-1])
+            r_result.append(field+" : "+str(value[::-1]))
         start += size
         status = ""
+    return r_result

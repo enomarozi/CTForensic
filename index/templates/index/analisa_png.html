@@ -157,8 +157,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function otherData(){
         let app = ('{{ otherData|escapejs }}');
-        console.log(app)
-        if(app && app !== "None"){
+        if(app && app !== "None" && app.length === 0){
             createElementData('Data Lain','otherData');
             let elementApp = document.getElementById('otherData');
             let arr = app.slice(1,-1).replace(/[']/g,"").replace(/[\[\]]/g, "").split(',');
