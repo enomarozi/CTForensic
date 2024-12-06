@@ -19,18 +19,65 @@ def fileHeader(file):
     field["File Name"]=int(''.join(file[26:28][::-1]),16)
     field["Extra Field"]=int(''.join(file[28:30][::-1]),16)
 
-    Flags = ["Encrypted file","Compression Option","Compression Option",
-             "Data Descriptor","Enchanced Deflation","Compressed Patched Data",
-             "Strong Encryption","Unused","Unused","Unused","Unused",
-             "Language Encoding","Reserved","Mask Header Values","Reserved",
-             "Reserved"]
+    Version = {0:"MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)",
+               1:"Amiga",
+               2:"OpenVMS",
+               3:"UNIX",
+               4:"VM/CMS",
+               5:"Atari ST",
+               6:"OS/2 H.P.F.S",
+               7:"Macintosh",
+               8:"Z-System",
+               9:"CP/M",
+               10:"Windows NTFS",
+               11:"MVS (OS/390 -Z/OS)",
+               12:"VSE",
+               13:"Acorn Risc",
+               14:"VFAT",
+               15:"Alternate MVS",
+               16:"BeOS",
+               17:"Tandem",
+               18:"OS/400",
+               19:"OS/X (Darwin)"}
 
-    Compression_Method = ["No Compression","Shrunk","Reduce With Compression factor 1",
-                          "Reduce With Compression factor 2","Reduce With Compression factor 3",
-                          "Reduce With Compression factor 4","Imploded","Reserved","Deflated",
-                          "Enhanced Deflated","PKWare DCL Imploded","Reserved","Compressed Using BZIP2",
-                          "LZMA","Reserved","Reserved","Reserved","Compress Using IBM TERSE",
-                          "IBM LZ77 z","PPMd Version 1, Rev 1"]
+    Flags = {0:"Encrypted file",
+             1:"Compression Option",
+             2:"Compression Option",
+             3:"Data Descriptor",
+             4:"Enchanced Deflation",
+             5:"Compressed Patched Data",
+             6:"Strong Encryption",
+             7:"Unused",
+             8:"Unused",
+             9:"Unused",
+             10:"Unused",
+             11:"Language Encoding",
+             12:"Reserved",
+             13:"Mask Header Values",
+             14:"Reserved",
+             15:"Reserved"}
+
+    Compression_Method = {0:"No Compression",
+                          1:"Shrunk",
+                          2:"Reduce With Compression factor 1",
+                          3:"Reduce With Compression factor 2",
+                          4:"Reduce With Compression factor 3",
+                          5:"Reduce With Compression factor 4",
+                          6:"Imploded",
+                          7:"Reserved",
+                          8:"Deflated",
+                          9:"Enhanced Deflated",
+                          10:"PKWare DCL Imploded",
+                          11:"Reserved",
+                          12:"Compressed Using BZIP2",
+                          13:"Reserved",
+                          14:"LZMA",
+                          15:"Reserved",
+                          17:"Reserved",
+                          18:"Compress Using IBM TERSE",
+                          19:"IBM LZ77 z",
+                          98:"PPMd Version 1, Rev 1",
+                          99:"BZIP2"}
 
     ascii_convert = ["File Name","Extra Field"]
     hexa_convert = ["Signature","CRC32"]
@@ -52,6 +99,8 @@ def fileHeader(file):
                 status = Flags[int(value[::-1],16)]
             elif field == "Compression":
                 status = Compression_Method[int(value[::-1],16)]
+            elif field == "Version":
+                status = Version[int(value[::-1],16)]
             r_result.append(field+" : "+str(int(value[::-1],16))+" "+status)
         elif field in hexa_convert:
             data = ''.join([value[:i][-2:][::-1] for i in range(2,len(value)+2,2)])
