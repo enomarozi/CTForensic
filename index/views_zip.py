@@ -38,7 +38,17 @@ def fileHeader(file):
                16:"BeOS",
                17:"Tandem",
                18:"OS/400",
-               19:"OS/X (Darwin)"}
+               19:"OS/X (Darwin)",
+               20:"Android",
+               21:"iOS",
+               22:"Linux",
+               23:"Windows Subsystem for Linux(WSL)",
+               24:"Chrome OS",
+               25:"FreeBSD",
+               26:"Haiku",
+               27:"Plan 9",
+               28:"WebAssembly",
+               29:"AIX"}
 
     Flags = {0:"Encrypted file",
              1:"Compression Option",
@@ -101,7 +111,13 @@ def fileHeader(file):
                 status = Compression_Method[int(value[::-1],16)]
             elif field == "Version":
                 status = Version[int(value[::-1],16)]
-            r_result.append(field+" : "+str(int(value[::-1],16))+" "+status)
+            elif field == "Modif Time":
+                status = mod_time(bin(int(value[::-1],16))[2:])
+            elif field == "Modif Date":
+                status = mod_date(bin(int(value[::-1],16)))
+            elif field == "Compressed Size" or field == "Uncompressed size" or field == "File Name Len" or field == "Extra Field len":
+                status = str(int(value[::-1],16))+" bytes"
+            r_result.append(field+" : "+status)
         elif field in hexa_convert:
             data = ''.join([value[:i][-2:][::-1] for i in range(2,len(value)+2,2)])
             r_result.append(field+" : "+str(data))
@@ -110,3 +126,12 @@ def fileHeader(file):
         start += size
         status = ""
     return r_result
+
+
+def mod_time(binary):
+    s,m,h = binary[-5:],binary[4:-5], binary[:-11]
+    return str(int(h,2))+":"+str(int(m,2))+":"+str(int(s,2))
+
+def mod_date(binary):
+    d,m,y = binary[-5:],binary[7:-5], binary[:-9]
+    return str(int(d,2))+"-"+str(int(m,2))+"-"+str(1980+int(y,2))
