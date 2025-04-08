@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ oFFs|escapejs }}');
         process(app, 'oFFs signature','oFFs');
     }
+    function eXIf(){
+        let app = ('{{ eXIf|escapejs }}');
+        process(app, 'eXIf signature','eXIf');
+    }
     function iCCP(){
         let app = ('{{ iCCP|escapejs }}');
         process(app, 'iCCP signature','iCCP');
@@ -169,6 +173,7 @@ document.addEventListener('DOMContentLoaded', function(){
     signature();
     IHDR();
     oFFs();
+    eXIf();
     iCCP();
     sBIT();
     bKGD();

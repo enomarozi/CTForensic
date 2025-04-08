@@ -15,6 +15,7 @@ def analisaPNG(request, id_):
 		"signature":signature(file),
 		"IHDR":IHDR(file),
 		"oFFs":oFFs(file),
+		"eXIf":eXIf(file),
 		"sBIT":sBIT(file),
 		"bKGD":bKGD(file),
 		"PLTE":PLTE(file),
@@ -104,6 +105,11 @@ def tIME(file):
 	field_marker = {"Year":2,"Month":1,"Day":1,"Hour":1,"Minute":1,"Second":1}
 	type_ = b"tIME"
 	return process(file,field_marker,type_,"tIME")
+
+def eXIf(file):
+	field_marker = {"TIFF Header":8,"IFD 0":4}
+	type_ = b"eXIf"
+	return process(file, field_marker, type_, "eXIf")
 
 def sRGB(file):
 	field_marker = {"Rendering Intent":1}
@@ -237,7 +243,7 @@ def RGB_MSB(file):
 def DATA(file):
 	list_data = []
 	result = 0
-	marker = [b"IHDR",b"sBIT",b"oFFs",b"PLTE",b"iCCP",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"cHRM",b"pHYs"]
+	marker = [b"IHDR",b"sBIT",b"oFFs",b"eXIf",b"PLTE",b"iCCP",b"tRNS",b"iTXt",b"tIME",b"bKGD",b"sRGB",b"gAMA",b"cHRM",b"pHYs"]
 	header = 8
 	result += header
 	for i in marker:
