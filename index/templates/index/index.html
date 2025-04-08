@@ -1,16 +1,6 @@
 {% extends "index/app.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Dashboard</title>
-</head>
-<body>
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/jquery.dataTables.css' %}">
 <div class='container-fluid'>
 	<div class="mb-4 upload-form">
 		<form method="POST" enctype="multipart/form-data">
@@ -89,7 +79,6 @@
         });
     });
     </script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 </div>
 {% endblock content %}
 </body>
