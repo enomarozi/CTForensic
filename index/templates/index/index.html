@@ -1,7 +1,7 @@
 {% extends "index/app.html" %}
 {% load static %}
 {% block content %}
-<div class='container-fluid'>
+<div class="content" id="content" style="transition: margin-left 0.3s;">
 	<div class="mb-4 upload-form">
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}

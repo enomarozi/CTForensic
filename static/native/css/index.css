@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-
 *{
-	margin:0;
-	padding: 0;
-	font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .topbar{
     top: 0;
@@ -12,13 +9,11 @@
     height: 70px;
     z-index: 10;
     display: flex;
-    background-color: #f7f5f5;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0;
 }
 .upload-form{
-	background-color: white;
 	border-radius: 5px;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 	margin: 1% auto;
@@ -28,4 +23,54 @@
 input[type="submit"]{
 	width: 100%;
 	margin-top: 4%;
+}
+.btn-account{
+    border: none;
+}
+.fa-user-circle {
+    font-size: 38px;
+    vertical-align: middle;
+}
+.btn-close-sidebar {
+    display: flex;
+    align-items: center;
+}
+.btn-custom {
+    border: none;
+    background: none;
+    padding: 0;
+    float: right;
+    margin-left: 10px;
+}
+.btn-custom img {
+    width: 45px;
+    height: 45px;
+}
+.sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    height: calc(100% - 70px);
+    width: 250px;
+    z-index: 1000;
+    transition: width 0.1s ease;
+    overflow-y: auto;
+}
+.sidebar.collapsed {
+    width: 70px;
+}
+.sidebar-body {
+    padding: 10px;
+}
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    flex-grow: 1;
+    transition: margin-left 0.1s ease;
+    margin-top: 70px;
+    overflow-y: auto;
+    height: calc(100vh - 70px);
+}
+.sidebar{
+    font-size: 14px;
 }
