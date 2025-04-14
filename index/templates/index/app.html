@@ -59,6 +59,16 @@
                 <div class="card mb-1">
                     <div class="card-header d-flex align-items-center p-2" style="background-color: #e9ecef; border: none;">
                         <a class="d-flex align-items-center w-100 text-dark text-decoration-none" data-bs-toggle="collapse" href="#imageMenu" role="button" aria-expanded="false" aria-controls="imageMenu">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            <span class="sidebar-text flex-grow-1">Dashboard</span>
+                            <i class="bi bi-caret-down-fill"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card mb-1">
+                    <div class="card-header d-flex align-items-center p-2" style="background-color: #e9ecef; border: none;">
+                        <a class="d-flex align-items-center w-100 text-dark text-decoration-none" data-bs-toggle="collapse" href="{% url 'image' %}" role="button" aria-expanded="false" aria-controls="imageMenu">
                             <i class="fas fa-eye me-2"></i>
                             <span class="sidebar-text flex-grow-1">Image Forensics</span>
                             <i class="bi bi-caret-down-fill"></i>
@@ -69,8 +79,8 @@
                 <div class="card mb-1">
                     <div class="card-header d-flex align-items-center p-2" style="background-color: #e9ecef; border: none;">
                         <a class="d-flex align-items-center w-100 text-dark text-decoration-none" data-bs-toggle="collapse" href="#volatilityMenu" role="button" aria-expanded="false" aria-controls="volatilityMenu">
-                            <i class="fas fa-memory me-2"></i>
-                            <span class="sidebar-text flex-grow-1">Volatility Forensics</span>
+                            <i class="fas fa-file-alt me-2"></i>
+                            <span class="sidebar-text flex-grow-1">Log Forensics</span>
                             <i class="bi bi-caret-down-fill"></i>
                         </a>
                     </div>
