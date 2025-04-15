@@ -35,7 +35,7 @@ def analisaPNG(request, id_):
 		"DATA":DATA(file),
 		"otherData":otherData(file),
 	}
-	return render(request, 'index/analisa_png.html',context)
+	return render(request, 'imageforensics/analisa_png.html',context)
 
 def signature(file):
 	marker = file[:8].hex()

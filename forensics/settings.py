@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'index',
     'account',
     'imageforensics',
+    'networkforensics',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ SESSION_COOKIE_AGE = 604800
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'imageforensic',
+        'NAME': 'forensics',
         'USER':'root',
         'PASSWORD':'password',
         'HOST':'localhost',

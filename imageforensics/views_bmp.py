@@ -13,7 +13,7 @@ def analisaBMP(request, id_):
 		"infoHeaderBMP": infoHeaderBMP(file),
 		"colorTable":colorTable(file),
 	}
-	return render(request, 'index/analisa_bmp.html',context)
+	return render(request, 'imageforensics/analisa_bmp.html',context)
 
 def headerBMP(file):
 	header = {

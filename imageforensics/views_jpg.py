@@ -27,7 +27,7 @@ def analisaJPG(request, id_):
         "Data":Data(file),
         "string_printable":string_printable(file),
     }
-    return render(request, 'index/analisa_jpg.html',context)
+    return render(request, 'imageforensics/analisa_jpg.html',context)
 def process(field, marker):
     stringData = []
     list_marker = ["Exif Identifier","Comment"]
