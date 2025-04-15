@@ -18,12 +18,12 @@ def index(request):
 				size=fileSize(uploaded_file.size), 
 				format=signatureFile(file_data)
 			)
-			return redirect('index')
+			return redirect('imageforensics')
 		context = {
 			"user":request.user,
 			"title":"Dashboard",
 		}
-		return render(request,'index/index.html',context)
+		return render(request,'imageforensics/imageforensics.html',context)
 	return HttpResponseRedirect(reverse('masuk'))
 
 def signatureFile(file):

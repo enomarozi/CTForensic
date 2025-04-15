@@ -2,7 +2,7 @@ from django.urls import path
 from . import views, views_jpg, views_png, views_bmp, views_pcap, views_zip
 
 urlpatterns = [
-	path('',views.index, name='index'),
+	path('',views.index, name='image_forensics'),
 	path('cleanData/',views.cleanData, name='cleanData'),
 	path('getData/',views.getData, name='getData'),
 	path('checkPacket/', views_pcap.checkPacket, name='checkPacket'),
