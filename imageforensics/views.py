@@ -13,7 +13,7 @@ def index(request):
 			uploaded_file = request.FILES['file']
 			file_data = uploaded_file.read()
 			fs = FileSystemStorage()
-			filename = fs.save(uploaded_file.name, uploaded_file)
+			filename = fs.save(f'imageforensics/{uploaded_file.name}', uploaded_file)
 			ImageFile.objects.create(
 				name=filename, 
 				size=fileSize(uploaded_file.size), 
@@ -49,7 +49,7 @@ def getData(request):
 def deleteData(request, id_):
 	if request.user.is_authenticated:
 		data = ImageFile.objects.get(id=id_)
-		os.system("rm uploads/"+data.name)
+		os.system("rm uploads/imageforensics/"+data.name)
 		data.delete()
-		return HttpResponseRedirect(reverse('index'))
+		return HttpResponseRedirect(reverse('image_forensics'))
 	return HttpResponseRedirect(reverse('masuk'))

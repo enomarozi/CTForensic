@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 from index.forms import UploadFileForm
-from index.models import NetworkFile
+from .models import NetworkFile
 from index.views import fileSize
 import os
 
@@ -13,7 +13,7 @@ def index(request):
 			uploaded_file = request.FILES['file']
 			file_data = uploaded_file.read()
 			fs = FileSystemStorage()
-			filename = fs.save(uploaded_file.name, uploaded_file)
+			filename = fs.save(f'networkforensics/{uploaded_file.name}', uploaded_file)
 			NetworkFile.objects.create(
 				name=filename, 
 				size=fileSize(uploaded_file.size), 
@@ -47,7 +47,7 @@ def getData(request):
 def deleteData(request, id_):
 	if request.user.is_authenticated:
 		data = NetworkFile.objects.get(id=id_)
-		os.system("rm uploads/"+data.name)
+		os.system("rm uploads/networkforensics/"+data.name)
 		data.delete()
-		return HttpResponseRedirect(reverse('index'))
+		return HttpResponseRedirect(reverse('network_forensics'))
 	return HttpResponseRedirect(reverse('masuk'))

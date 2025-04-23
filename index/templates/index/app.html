@@ -45,10 +45,10 @@
                     {{ user }} <i class="fas fa-user-circle fa-2x ms-2"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                    <li><a class="dropdown-item" href="#">Setting</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pengaturan' %}">Setting</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#">Clear Data</a></li>
-                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                    <li><a class="dropdown-item" href="{% url 'keluar' %}">Logout</a></li>
                 </ul>
             </div>
         </nav>

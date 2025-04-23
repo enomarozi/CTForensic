@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from index.models import NetworkFile
+from .models import NetworkFile
 from scapy.all import *
 import base64
 
@@ -16,7 +16,7 @@ def analisaPCAP(request, id_):
 		'metadata':fileName,
 		'ip': getIP(packets)
 	}
-	return render(request, 'index/analisa_pcap.html', context)
+	return render(request, 'networkforensics/analisa_pcap.html', context)
 
 def getIP(packets):
 	IPresultSRCtoDST = []
