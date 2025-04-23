@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import ImageFile
+from PIL import Image
 import binascii
+import stepic
 import cv2
 
 letter = ''.join([chr(i) for i in range(32,127)])
@@ -33,7 +35,9 @@ def analisaPNG(request, id_):
 		"RGB_LSB":RGB_LSB(path_file),
 		"RGB_MSB":RGB_MSB(path_file),
 		"DATA":DATA(file),
+		"stepicData":stepicData(path_file),
 		"otherData":otherData(file),
+
 	}
 	return render(request, 'imageforensics/analisa_png.html',context)
 
@@ -205,40 +209,44 @@ def IDAT(file):
 			pass
 	return crc_list
 def RGB_LSB(file):
-	try:
-		result = ''
-		text = ''
-		img = cv2.imread(file)
-		image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		for i in image_rgb:
-			for j in i:
-				for k in j:
-					if len(result) == 8:
-						if chr(int(result,2)) in letter:
-							text += chr(int(result,2))
-							result = ''
-					result += bin(k)[-1:]
-	except Exception as e:
-		text = "'Image Error : "+str(e)+"'"
-	return text
+	img = cv2.imread(file)
+	if img.shape[0] < 1920 and img.shape[1] < 1080:
+		try:
+			result = ''
+			text = ''
+			img = cv2.imread(file)
+			image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+			for i in image_rgb:
+				for j in i:
+					for k in j:
+						if len(result) == 8:
+							if chr(int(result,2)) in letter:
+								text += chr(int(result,2))
+								result = ''
+						result += bin(k)[-1:]
+		except Exception as e:
+			text = "'Image Error : "+str(e)+"'"
+		return text
 
 def RGB_MSB(file):
-	try:
-		result = ''
-		text = ''
-		img = cv2.imread(file)
-		image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		for i in image_rgb:
-			for j in i:
-				for k in j:
-					if len(result) == 8:
-						if chr(int(result,2)) in letter:
-							text += chr(int(result,2))
-							result = ''
-					result += bin(k)[2:].rjust(8,'0')[:1]
-	except Exception as e:
-		text = "'Image Error : "+str(e)+"'"
-	return text
+	img = cv2.imread(file)
+	if img.shape[0] < 1920 and img.shape[1] < 1080:
+		try:
+			result = ''
+			text = ''
+			img = cv2.imread(file)
+			image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+			for i in image_rgb:
+				for j in i:
+					for k in j:
+						if len(result) == 8:
+							if chr(int(result,2)) in letter:
+								text += chr(int(result,2))
+								result = ''
+						result += bin(k)[2:].rjust(8,'0')[:1]
+		except Exception as e:
+			text = "'Image Error : "+str(e)+"'"
+		return text
 
 def DATA(file):
 	list_data = []
@@ -280,6 +288,11 @@ def DATA(file):
 		return (list_data,"Panjang bytes file : "+str(result)+" Panjang bytes file sesuai")
 	else:
 		return (list_data,"Panjang bytes file tidak sesuai, pengukuran = "+str(result)+" sedangkan filenya = "+str(len(file)))
+
+def stepicData(path_file):
+	with open(path_file,'rb') as f:
+		image = Image.open(f)
+		return stepic.decode(image).encode()
 
 def otherData(path_file):
     data = path_file.split(b'IEND')

@@ -34,11 +34,6 @@ def signatureFile(file):
 		if key in file[:20]:
 			return value
 
-def cleanData(request):
-	NetworkFile.objects.all().delete()
-	os.system("rm uploads/*")
-	return HttpResponseRedirect(reverse('index'))
-
 def getData(request):
 	file_image = NetworkFile.objects.all().values('id','name','size','format')
 	data = list(file_image)

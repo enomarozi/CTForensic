@@ -1,4 +1,9 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from networkforensics.models import NetworkFile
+from imageforensics.models import ImageFile
+import os
 
 def index(request):
 	return render(request,'index/index.html')

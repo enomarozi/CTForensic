@@ -56,7 +56,6 @@ def bytesData(packets,ip_address):
 		try:
 			if ":" in ip_src or ":" in ip_dst:
 				if i[IPv6].src == ip_src and i[IPv6].dst == ip_dst:
-					result_byte = i[Raw].load
 					sport.add(i[IPv6].sport)
 					dport.add(i[IPv6].dport)
 					if "TCP" in i[IPv6]:
@@ -66,21 +65,21 @@ def bytesData(packets,ip_address):
 					result_byte += raw_data_base64
 			elif "." in ip_src or "." in ip_dst:
 				if i[IP].src == ip_src and i[IP].dst == ip_dst:
-					result_byte = i[Raw].load
 					sport.add(i[IP].sport)
 					dport.add(i[IP].dport)
 					if "TCP" in i[IP]:
 						type_.add("TCP")
 					elif "UDP" in i[IP]:
 						type_.add("UDP")
-					result_byte += i[Raw].load
+					result_byte += i[Raw].load+b'\n'
 
 		except Exception as e:
 			pass
+	print(result_byte)
 	if len(sport) == 0:
 		sport.add("Tidak ada port")
 	if len(dport) == 0:
 		dport.add("Tidak ada port")
 	if len(type_) == 0:
 		type_.add("Others")
-	return (list(sport)[0],list(dport)[0],result_byte,list(type_))
+	return (list(sport)[0],list(dport)[0],result_byte.decode(errors='ignore'),list(type_))

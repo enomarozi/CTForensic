@@ -109,6 +109,17 @@ document.addEventListener('DOMContentLoaded', function(){
         let app = ('{{ IEND|escapejs }}');
         process(app, 'IEND signature','IEND');
     }
+    function StepicData(){
+        let app = ('{{ stepicData|escapejs }}');
+        if(app && app !== "None"){
+            createElementData('Stepic Data','Stepic');
+            let elementApp = document.getElementById('Stepic');
+            let arr = app.slice(1,-1).replace(/[']/g,"").split(',');
+            arr.forEach(item=>{
+                elementApp.innerText += item+"\n";
+            });
+        }
+    }
     function process(app, title_, id_){
         if(app && app !== "None"){
             createElementData(title_,id_);
@@ -157,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
+
     function otherData(){
         let app = ('{{ otherData|escapejs }}');
         if(app && app !== "None" && app.length === 0){
@@ -168,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
     }
+
     signature();
     IHDR();
     oFFs();
@@ -189,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function(){
     RGB_LSB();
     RGB_MSB();
     DATA();
+    StepicData();
     otherData();
 });
 </script>

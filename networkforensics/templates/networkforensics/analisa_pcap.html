@@ -60,8 +60,8 @@
                 xhr.onload = function(){
                     if(xhr.status >= 200 && xhr.status < 400){
                         let data = JSON.parse(xhr.responseText)
-                        document.getElementById('detailsPacket').innerHTML = data.type+" Packet, Source Port : "+data.sport+", Destination Port : "+data.dport;
-                        document.getElementById('bytesPacket').innerHTML = data.bytes_data_encode.slice(2,-1);
+                        document.getElementById('detailsPacket').innerHTML = data.type+" Packet, Source Port : "+data.sport+", Destination Port : "+data.dport             
+                        document.getElementById('bytesPacket').innerHTML = data.bytes_data_encode.slice(2, -1);;
                     }else{
                         console.error("Request Error!!");
                     }
