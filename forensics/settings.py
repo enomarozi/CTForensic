@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'account',
     'imageforensics',
     'networkforensics',
+    'memoryforensics',
 ]
 
 MIDDLEWARE = [

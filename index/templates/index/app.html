@@ -77,13 +77,24 @@
 
                 <div class="card mb-1">
                     <div class="card-header d-flex align-items-center p-2" style="background-color: #e9ecef; border: none;">
-                        <a class="d-flex align-items-center w-100 text-dark text-decoration-none" href="{% url 'network_forensics' %}" role="button" aria-expanded="false" aria-controls="volatilityMenu">
+                        <a class="d-flex align-items-center w-100 text-dark text-decoration-none" href="{% url 'network_forensics' %}" role="button" aria-expanded="false" aria-controls="networkMenu">
                             <i class="fas fa-file-alt me-2"></i>
                             <span class="sidebar-text flex-grow-1">Network Forensics</span>
                             <i class="bi bi-caret-down-fill"></i>
                         </a>
                     </div>
                 </div>
+
+                <div class="card mb-1">
+                    <div class="card-header d-flex align-items-center p-2" style="background-color: #e9ecef; border: none;">
+                        <a class="d-flex align-items-center w-100 text-dark text-decoration-none" href="{% url 'memory_forensics' %}" role="button" aria-expanded="false" aria-controls="memoryMenu">
+                            <i class="fas fa-memory me-2"></i>
+                            <span class="sidebar-text flex-grow-1">Memory Forensics</span>
+                            <i class="bi bi-caret-down-fill"></i>
+                        </a>
+                    </div>
+                </div>
+
             </ul>
         </div>
     </div>
