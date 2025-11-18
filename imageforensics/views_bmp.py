@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import ImageFile
 import binascii
+import struct
 
 def analisaBMP(request, id_):
 	fileName = ImageFile.objects.get(pk=id_)
@@ -12,6 +13,7 @@ def analisaBMP(request, id_):
 		"headerBMP": headerBMP(file),
 		"infoHeaderBMP": infoHeaderBMP(file),
 		"colorTable":colorTable(file),
+		"extradata_padding":extradata_padding(file),
 	}
 	return render(request, 'imageforensics/analisa_bmp.html',context)
 
@@ -55,4 +57,24 @@ def colorTable(file):
 	if calc == len_color:
 		return "'Image Color Table Sesuai'"
 	else:
-		return "'Image Color Table Tidak Sesuai, Size Header "+str(calc)+" Sedangkan True Color "+str(len_color)+"'"
+		return "'Image Color Table Tidak Sesuai, Size Header "+str(calc)+",dan True Color "+str(len_color)+"'"
+
+def extradata_padding(file):
+	pixel_offset = struct.unpack_from("<I", file, 10)[0]
+	width = struct.unpack_from("<I", file, 18)[0]
+	height = struct.unpack_from("<I", file, 22)[0]
+	bits_per_pixel = struct.unpack_from("<H", file, 28)[0]
+	bytes_per_pixel = bits_per_pixel // 8
+
+	pixel_data = file[pixel_offset:]
+	row_size_raw = width * bytes_per_pixel
+	padding = (4 - (row_size_raw % 4)) % 4
+	extradata = b""
+	for y in range(height):
+	    start = y * (row_size_raw + padding)
+	    end = start + row_size_raw
+	    pad_start = end
+	    pad_end = end + padding
+	    extradata += pixel_data[pad_start:pad_end]
+	data = ''.join([hex(i)[2:].rjust(2,'0') for i in extradata])
+	return data
