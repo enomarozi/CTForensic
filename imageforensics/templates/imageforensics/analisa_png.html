@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
+        label.style.overflowWrap = "break-word";
         const Y_scroll = ["lsb", "msb","otherData"];
         const X_scroll = ["PLTE", "tRNS","iCCP"];
         const Y_scrollContaint = Y_scroll.some(keyword => id_.includes(keyword));

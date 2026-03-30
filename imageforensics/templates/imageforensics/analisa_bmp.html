@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function(){
         container.appendChild(title);
         const label = document.createElement('label');
         label.setAttribute('class','form-control');
+        label.style.overflowWrap = "break-word";
         const keywords = ["datavalue","stringvalue"];
         const containsKeyword = keywords.some(keyword => id_.includes(keyword));
         if(containsKeyword){
@@ -55,9 +56,17 @@ document.addEventListener('DOMContentLoaded', function(){
         let arr = app.slice(1,-1).replace(/["',]/g,"")
         elementApp.innerText += arr+"\n";
     }
+    function extradata_padding(){
+        let app = ('{{ extradata_padding|escapejs }}');
+        createElementData("Extradata Padding",'extradata_padding');
+        let elementApp = document.getElementById('extradata_padding');
+        let arr = app.slice(1,-1).replace(/["',]/g,"")
+        elementApp.innerText += arr+"\n";
+    }
     header();
     info();
     table();
+    extradata_padding();
 });
 </script>
 {% endblock content %}
