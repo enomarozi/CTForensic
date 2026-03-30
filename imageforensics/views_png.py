@@ -244,6 +244,49 @@ def RGB_MSB(file):
 					result += bin(k)[2:].rjust(8,'0')[:1]
 	else:
 		text = "Image Error"
+	try:
+		img = cv2.imread(file)
+		if img.shape[0] < 1920 and img.shape[1] < 1080:
+			try:
+				result = ''
+				text = ''
+				img = cv2.imread(file)
+				image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+				for i in image_rgb:
+					for j in i:
+						for k in j:
+							if len(result) == 8:
+								if chr(int(result,2)) in letter:
+									text += chr(int(result,2))
+									result = ''
+							result += bin(k)[-1:]
+			except Exception as e:
+				text = "'Image Error : "+str(e)+"'"
+	except Exception as e:
+		text = "'Image Error : "+str(e)+"'"
+	return text
+
+def RGB_MSB(file):
+	try:
+		img = cv2.imread(file)
+		if img.shape[0] < 1920 and img.shape[1] < 1080:
+			try:
+				result = ''
+				text = ''
+				img = cv2.imread(file)
+				image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+				for i in image_rgb:
+					for j in i:
+						for k in j:
+							if len(result) == 8:
+								if chr(int(result,2)) in letter:
+									text += chr(int(result,2))
+									result = ''
+							result += bin(k)[2:].rjust(8,'0')[:1]
+			except Exception as e:
+				text = "'Image Error : "+str(e)+"'"
+	except Exception as e:
+		text = "'Image Error : "+str(e)+"'"
 	return text
 
 def DATA(file):
@@ -294,6 +337,12 @@ def stepicData(path_file):
 			return "'Image must be RGB RGBA or CMYK'"
 		else:
 			return stepic.decode(image).encode()
+	try:
+		with open(path_file,'rb') as f:
+			image = Image.open(f)
+			return stepic.decode(image).encode()
+	except Exception as e:
+		text = "'Image Error : "+str(e)+"'"
 
 def otherData(path_file):
     data = path_file.split(b'IEND')
