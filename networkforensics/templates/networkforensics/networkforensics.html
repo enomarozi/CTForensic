@@ -1,80 +1,120 @@
 {% extends "index/app.html" %}
 {% load static %}
 {% block content %}
-<div class="content" id="content" style="transition: margin-left 0.3s;">
-	<div class="mb-4 upload-form">
-		<form method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-			<div class="mb-3">
-				<label for="formFileMultiple" class="form-label">Input File <b>PCAP And PCAPNG <label id="showMoreBtn" class="text-decoration-underline fw-bold" style="cursor: pointer; color: blue;">Show More</label></b></label>
-			</div>
-			<input class="form-control" type="file" name="file" required>
-			<div class="upload-submit">
-				<input class="btn btn-primary" type="submit" name="submit" value="Upload">
-			</div>
-		</form>
-	</div>
-    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myModalLabel">Extension Support</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+<div class="container-fluid">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Input File 
+                        <small class="text-muted">(PCAP, PCAPNG)</small>
+                        <span id="showMoreBtn" class="text-primary fw-semibold text-decoration-underline ms-2" style="cursor:pointer;">
+                            Show More
+                        </span>
+                    </label>
+
+                    <input class="form-control mt-2" type="file" name="file" required>
                 </div>
-                <div class="modal-body">
-                    <ul>
-                        <li>PCAP</li>
-                        <li>PCAPNG</li>
-                    </ul>
-                </div>
-            </div>
+
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-upload me-1"></i> Upload
+                </button>
+
+            </form>
+
         </div>
     </div>
-    
-    <script>
-        const showMoreBtn = document.getElementById('showMoreBtn');
-        const myModal = new bootstrap.Modal(document.getElementById('myModal'));
 
-        showMoreBtn.addEventListener('click', function() {
-            myModal.show();
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="statusTable" class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Size</th>
+                        <th>Extension</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Extension Support</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <ul class="mb-0">
+                    <li>PCAP</li>
+                    <li>PCAPNG</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const showMoreBtn = document.getElementById('showMoreBtn');
+        const modalEl = document.getElementById('myModal');
+        const modal = new bootstrap.Modal(modalEl);
+
+        showMoreBtn.addEventListener('click', function () {
+            modal.show();
         });
-    </script>
-	<table id="statusTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">No</th>
-                <th scope="col">Nama</th>
-                <th scope="col">Size</th>
-                <th scope="col">Extension</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-    </table>
-    <script type="text/javascript">
-    $(document).ready(function() {
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
         $('#statusTable').DataTable({
             ajax: {
                 url: '/network/getData/',
                 dataSrc: ''
             },
             columns: [
-                { data: null, render: function(data, type, row, meta) {
-                    return meta.row + 1;
-                }},
+                {
+                    data: null,
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
                 { data: 'name', orderable: false },
                 { data: 'size' },
-                { data: 'format' , orderable: false},
-                { data: null, orderable: false, render: function(data, type, row) {
-                    return `
-                        <a class="btn btn-success btn-sm" href=analisa${row.format}/${row.id} target="_blank">Analisa</a>
-                        <a class="btn btn-danger btn-sm" href=deleteData/${row.id}>Delete</a>
-                    `;
-                }}
+                { data: 'format', orderable: false },
+                {
+                    data: null,
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                            <a class="btn btn-success btn-sm me-1" href="analisa${row.format}/${row.id}" target="_blank">
+                                Analisa
+                            </a>
+                            <a class="btn btn-danger btn-sm" href="deleteData/${row.id}">
+                                Delete
+                            </a>
+                        `;
+                    }
+                }
             ]
         });
     });
-    </script>
-</div>
+</script>
+
 {% endblock content %}
-</body>
-</html>

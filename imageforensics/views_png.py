@@ -209,7 +209,6 @@ def IDAT(file):
 			pass
 	return crc_list
 def RGB_LSB(file):
-<<<<<<< HEAD
 	try:
 		img = cv2.imread(file)
 		if img.shape[0] < 1920 and img.shape[1] < 1080:
@@ -233,7 +232,6 @@ def RGB_LSB(file):
 	return text
 
 def RGB_MSB(file):
-=======
 	img = cv2.imread(file)
 	if img is not None:
 		result = ''
@@ -292,7 +290,6 @@ def RGB_MSB(file):
 	return text
 
 def RGB_MSB(file):
->>>>>>> 43566dc
 	try:
 		img = cv2.imread(file)
 		if img.shape[0] < 1920 and img.shape[1] < 1080:
@@ -357,25 +354,18 @@ def DATA(file):
 		return (list_data,"Panjang bytes file tidak sesuai, pengukuran = "+str(result)+" sedangkan filenya = "+str(len(file)))
 
 def stepicData(path_file):
-<<<<<<< HEAD
-=======
 	with open(path_file,'rb') as f:
 		image = Image.open(f)
 		if image.mode not in["RGB","RGBA","CMYK"]:
 			return "'Image must be RGB RGBA or CMYK'"
 		else:
 			return stepic.decode(image).encode()
->>>>>>> 43566dc
 	try:
 		with open(path_file,'rb') as f:
 			image = Image.open(f)
 			return stepic.decode(image).encode()
 	except Exception as e:
 		text = "'Image Error : "+str(e)+"'"
-<<<<<<< HEAD
-
-=======
->>>>>>> 43566dc
 
 def otherData(path_file):
     data = path_file.split(b'IEND')
