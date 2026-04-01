@@ -19,10 +19,50 @@ def analisaBMP(request, id_):
 
 def headerBMP(file):
 	header = {
-		"Signature":2,"File Size":4,"Reserved 1":2,
-		"Reserved 2":2,"Data Offset":4,
+		"Marker":bfType(file),"File Size":bfSize(file),"Reserved 1":bfReserved1(file),
+		"Reserved 2":bfReserved2(file),"Data Offset Bit":bfOffBits(file),
 	}
-	return process(file,header,0)
+	return header
+
+def bfType(file):
+	return file[:2].decode()
+
+def bfSize(file):
+	file_size = len(file)
+	b = file_size.to_bytes(3, byteorder='little')
+	actual_size = int.from_bytes(b, byteorder='big') 
+	header_size = int.from_bytes(file[2:6], byteorder='little')
+	if file_size != header_size:
+		bf_Size = f"Actual size = {hex(actual_size)[2:]}"
+	else:
+		bf_Size = hex(actual_size)[2:]
+	return bf_Size
+
+def bfReserved1(file):
+	actual_reserved1 = hex(0)[2:]
+	header_reserved1 = int.from_bytes(file[6:8], byteorder='little')
+	if int(actual_reserved1) != header_reserved1:
+		actual_reserved1 = "Actual reserved 1 = 0"
+	return actual_reserved1
+
+def bfReserved2(file):
+	actual_reserved2 = hex(0)[2:]
+	header_reserved2 = int.from_bytes(file[8:10], byteorder='little')
+	if int(actual_reserved2) != header_reserved2:
+		actual_reserved2 = "Actual reserved 1 = 0"
+	return actual_reserved2
+
+def bfOffBits(file):
+	header_offbits = 14
+	arr_header_offbits = [hex(i+14)[2:] for i in [12,40,52,56,108,124]]
+	header_offbit = int.from_bytes(file[10:13], byteorder='little')
+	result = "Possibility Offbits "
+	for i in arr_header_offbits:
+		if hex(header_offbit)[2:] == i:
+			return str(i)
+		else:
+			result += f" {i}"
+	return result
 
 def infoHeaderBMP(file):
 	header = {"Size Bitmap Info Header":4,"Image Width":4,
