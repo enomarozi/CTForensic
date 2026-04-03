@@ -11,7 +11,7 @@ def analisaBMP(request, id_):
 		"title":"Analysis BMP",
 		"image_url":"/"+path_file,
 		"headerBMP": headerBMP(file),
-		"infoHeaderBMP": infoHeaderBMP(file),
+		"DIBHeader": DIBHeader(file),
 		"colorTable":colorTable(file),
 		"extradata_padding":extradata_padding(file),
 	}
@@ -53,7 +53,6 @@ def bfReserved2(file):
 	return actual_reserved2
 
 def bfOffBits(file):
-	header_offbits = 14
 	arr_header_offbits = [hex(i+14)[2:] for i in [12,40,52,56,108,124]]
 	header_offbit = int.from_bytes(file[10:13], byteorder='little')
 	result = "Possibility Offbits "
@@ -64,29 +63,93 @@ def bfOffBits(file):
 			result += f" {i}"
 	return result
 
-def infoHeaderBMP(file):
-	header = {"Size Bitmap Info Header":4,"Image Width":4,
-			"Image Height":4,"Planes":2,"Bit Count":2,
-			"Compression":4,"Image Size":4,"X Pixels Per Meter":4,
+def DIBHeader(file):
+	biWidth_biHeight_biBiSizeImage(file)
+	header = {"Size Bitmap Info Header":biSize(file),"Image Width":biWidth(file),
+			"Image Height":biHeight(file),"Planes":biPlane(file),"Bit Count":biBitCount(file),
+			"Compression":4,"Image Size":biBiSizeImage(file),"X Pixels Per Meter":4,
 			"Y Pixels Per Meter":4,"Colors Used":4,
 			"Colors Important":4}
-	return process(file,header,14)
+	return header
 
-def process(file,header,start_):
-	marker = []
-	start, end=start_,start_
-	for field,size in header.items():
-		end += size
-		if field == "Signature":
-			marker.append("'Marker :"+file[start:end].decode('ascii')+"'")
+def biSize(file):
+	arr_header_biSize = [12,40,52,56,108,124]
+	header_biSize = int.from_bytes(file[14:17], byteorder='little')
+	result = "Possibility biSize "
+	for i in arr_header_biSize:
+		if hex(header_biSize)[2:] == hex(i)[2:].rjust(2,'0'):
+			return hex(i)[2:].rjust(2,'0')
 		else:
-			value = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[start:end]][::-1]),16)
-			if value == 0:
-				marker.append("'"+field+" : 00'")
-			else:
-				marker.append("'"+field+" : "+str(value))
-		start += size
-	return marker
+			result += f" {hex(i)[2:].rjust(2,'0')}"
+	return result
+
+def biWidth_biHeight_biBiSizeImage(file):
+	header_biHeight = int.from_bytes(file[22:25], byteorder='little')
+	header_biWidth = int.from_bytes(file[18:21], byteorder='little')
+	header_biBiSizeImage = int.from_bytes(file[34:38], byteorder='little')
+	bitCount = biBitCount(file)
+	
+	row_size = ((int(bitCount) * header_biHeight + 31) // 32) * 4
+	actual_biWdith = int(biBiSizeImage(file),16) // row_size
+
+	row_size = ((int(bitCount) * header_biWidth + 31) // 32) * 4
+	actual_biHeight = int(biBiSizeImage(file),16) // row_size
+	print(actual_biWdith, actual_biHeight, header_biBiSizeImage)
+
+
+def biWidth(file):
+	header_biHeight = int.from_bytes(file[22:25], byteorder='little')
+	header_biWidth = int.from_bytes(file[18:21], byteorder='little')
+	bitCount = biBitCount(file)
+	row_size = ((int(bitCount) * header_biHeight + 31) // 32) * 4
+	actual_biWdith = int(biBiSizeImage(file),16) // row_size
+	if header_biWidth == actual_biWdith:
+		return hex(actual_biWdith)[2:].rjust(2,'0')		
+	return f"Possibility biWidth = {actual_biWdith}"
+
+def biHeight(file):
+	header_biHeight = int.from_bytes(file[22:25], byteorder='little')
+	header_biWidth = int.from_bytes(file[18:21], byteorder='little')
+	bitCount = biBitCount(file)
+	row_size = ((int(bitCount) * header_biWidth + 31) // 32) * 4
+	actual_biHeight = int(biBiSizeImage(file),16) // row_size
+	if header_biHeight == actual_biHeight:
+		return hex(actual_biHeight)[2:].rjust(2,'0')
+	return f"Possibility biHeight = {actual_biHeight}"
+
+def biPlane(file):
+	header_biPlane = int.from_bytes(file[26:28], byteorder='little')
+	return hex(header_biPlane)[2:].rjust(2,'0')
+
+def biBitCount(file):
+	arr_header_biBitCount = [1,4,8,16,24,32]
+	header_biBitCount = int.from_bytes(file[28:32], byteorder='little')
+	result = "Possibility biBitCount"
+	for i in arr_header_biBitCount:
+		if hex(header_biBitCount)[2:].rjust(2,'0') == hex(i)[2:].rjust(2,'0'):
+			return str(i)
+		else:
+			result += f" {hex(i)[2:].rjust(2,'0')}"
+	return result
+
+def biBiSizeImage(file):
+	header_biBiSizeImage = int.from_bytes(file[34:38], byteorder='little')
+	return hex(header_biBiSizeImage)
+# def process(file,header,start_):
+# 	marker = []
+# 	start, end=start_,start_
+# 	for field,size in header.items():
+# 		end += size
+# 		if field == "Signature":
+# 			marker.append("'Marker :"+file[start:end].decode('ascii')+"'")
+# 		else:
+# 			value = int(''.join([hex(i)[2:].rjust(2,'0') for i in file[start:end]][::-1]),16)
+# 			if value == 0:
+# 				marker.append("'"+field+" : 00'")
+# 			else:
+# 				marker.append("'"+field+" : "+str(value))
+# 		start += size
+# 	return marker
 
 def colorTable(file):
 	len_color = len(file[54:len(file)])
