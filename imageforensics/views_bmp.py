@@ -89,12 +89,12 @@ def biWidth_biHeight_biBiSizeImage(file):
 	header_biBiSizeImage = int.from_bytes(file[34:38], byteorder='little')
 	bitCount = biBitCount(file)
 	
-	row_size = ((int(bitCount) * header_biHeight + 31) // 32) * 4
-	actual_biWdith = int(biBiSizeImage(file),16) // row_size
+	row_size = ((int(bitCount) * header_biHeight) / 32) * 4
+	actual_biWdith = int(biBiSizeImage(file),16) / row_size
 
-	row_size = ((int(bitCount) * header_biWidth + 31) // 32) * 4
-	actual_biHeight = int(biBiSizeImage(file),16) // row_size
-	print(actual_biWdith, actual_biHeight, header_biBiSizeImage)
+	row_size = ((int(bitCount) * header_biWidth) / 32) * 4
+	actual_biHeight = int(biBiSizeImage(file),16) / row_size
+	#print(actual_biWdith, actual_biHeight, header_biBiSizeImage)
 
 
 def biWidth(file):
@@ -102,10 +102,10 @@ def biWidth(file):
 	header_biWidth = int.from_bytes(file[18:21], byteorder='little')
 	bitCount = biBitCount(file)
 	row_size = ((int(bitCount) * header_biHeight + 31) // 32) * 4
-	actual_biWdith = int(biBiSizeImage(file),16) // row_size
-	if header_biWidth == actual_biWdith:
-		return hex(actual_biWdith)[2:].rjust(2,'0')		
-	return f"Possibility biWidth = {actual_biWdith}"
+	actual_biWidth = int(biBiSizeImage(file),16) // row_size
+	if header_biWidth == actual_biWidth:
+		return hex(actual_biWidth)[2:].rjust(2,'0')		
+	return f"Possibility biWidth = {actual_biWidth:04X}"
 
 def biHeight(file):
 	header_biHeight = int.from_bytes(file[22:25], byteorder='little')
@@ -115,7 +115,7 @@ def biHeight(file):
 	actual_biHeight = int(biBiSizeImage(file),16) // row_size
 	if header_biHeight == actual_biHeight:
 		return hex(actual_biHeight)[2:].rjust(2,'0')
-	return f"Possibility biHeight = {actual_biHeight}"
+	return f"Possibility biHeight = {actual_biHeight:04X}"
 
 def biPlane(file):
 	header_biPlane = int.from_bytes(file[26:28], byteorder='little')
