@@ -39,11 +39,13 @@ def checkPacket(request):
 		fileName = NetworkFile.objects.get(pk=id_)
 		path_file = "uploads/"+fileName.name
 		packets = rdpcap(path_file)
+		result = bytesData(packets,ip_address)
 		response_data = {
-			'type':bytesData(packets,ip_address)[3],
-			'sport':bytesData(packets,ip_address)[0],
-			'dport':bytesData(packets,ip_address)[1],
-			'bytes_data_encode':str(bytesData(packets,ip_address)[2]),
+			'type': result[3],
+			'sport': result[0],
+			'dport': result[1],
+			'bytes_data_encode':result[2],
+			'dns': portDNS(packets,ip_address) if 53 in result[0] else None,
 		}
 		return JsonResponse(response_data)
 
@@ -75,11 +77,19 @@ def bytesData(packets,ip_address):
 
 		except Exception as e:
 			pass
-	print(result_byte)
 	if len(sport) == 0:
 		sport.add("Tidak ada port")
 	if len(dport) == 0:
 		dport.add("Tidak ada port")
 	if len(type_) == 0:
 		type_.add("Others")
-	return (list(sport)[0],list(dport)[0],result_byte.decode(errors='ignore'),list(type_))
+	return (list(sport),list(dport),result_byte.decode(errors='ignore'),list(type_))
+
+def portDNS(packets,ip_address):
+	ip_src, ip_dst = ip_address.split("-")
+	result = b''
+	for i in packets:
+		if i.haslayer(DNS):
+			if i[DNS].summary() and (i[IP].dst == ip_dst or i[IP].src == ip_src):
+				result += i[DNSQR].qname+b"\n"
+	return result.decode(errors='ignore')
