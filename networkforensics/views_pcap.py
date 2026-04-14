@@ -45,7 +45,7 @@ def checkPacket(request):
 			'sport': result[0],
 			'dport': result[1],
 			'bytes_data_encode':result[2],
-			'dns': portDNS(packets,ip_address) if 53 in result[0] else None,
+			'dns': portDNS(packets,ip_address) if 53 in result[1] or 53 in result[0] else None,
 		}
 		return JsonResponse(response_data)
 
@@ -73,7 +73,7 @@ def bytesData(packets,ip_address):
 						type_.add("TCP")
 					elif "UDP" in i[IP]:
 						type_.add("UDP")
-					result_byte += i[Raw].load+b'\n'
+					result_byte += i[Raw].load
 
 		except Exception as e:
 			pass
@@ -90,6 +90,6 @@ def portDNS(packets,ip_address):
 	result = b''
 	for i in packets:
 		if i.haslayer(DNS):
-			if i[DNS].summary() and (i[IP].dst == ip_dst or i[IP].src == ip_src):
+			if i[IP].dst == ip_dst and i[IP].src == ip_src:
 				result += i[DNSQR].qname+b"\n"
 	return result.decode(errors='ignore')
