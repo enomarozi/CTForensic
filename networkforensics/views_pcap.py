@@ -37,7 +37,7 @@ def checkPacket(request):
 		ip_address = request.GET.get('ip')
 		id_ = request.GET.get('id')
 		fileName = NetworkFile.objects.get(pk=id_)
-		path_file = "uploads/"+fileName.name
+		path_file = "uploads/networkforensics/"+fileName.name
 		packets = rdpcap(path_file)
 		result = bytesData(packets,ip_address)
 		response_data = {
@@ -64,7 +64,7 @@ def bytesData(packets,ip_address):
 						type_.add("TCP")
 					elif "UDP" in i[IPv6]:
 						type_.add("UDP")
-					result_byte += raw_data_base64
+					result_byte += i[Raw].load
 			elif "." in ip_src or "." in ip_dst:
 				if i[IP].src == ip_src and i[IP].dst == ip_dst:
 					sport.add(i[IP].sport)

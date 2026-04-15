@@ -15,11 +15,11 @@ def index(request):
 		if request.method == "POST":
 			uploaded_file = request.FILES['file']
 			file_data = uploaded_file.read()
-			fs = FileSystemStorage()
-			filename = fs.save(f'networkforensics/{uploaded_file.name}', uploaded_file)
 			if signatureFile(file_data) == None:
 				messages.error(request, "File tidak valid atau bukan signature yang dikenali")
 				return redirect('network_forensics')
+			fs = FileSystemStorage()
+			filename = fs.save(f'networkforensics/{uploaded_file.name}', uploaded_file)
 			NetworkFile.objects.create(
 				name=filename.split('/')[1],
 				size=fileSize(uploaded_file.size),
