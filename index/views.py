@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from networkforensics.models import NetworkFile
 from imageforensics.models import ImageFile
 import os
 
+@login_required(login_url='masuk')
 def index(request):
 	return render(request,'index/index.html')
 

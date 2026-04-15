@@ -27,7 +27,7 @@ def registrasi(request):
 		form = RegistrasiForm(data=request.POST)
 		if form.is_valid():
 			user = form.save()
-			messages.success(request, "Registration successful.")
+			messages.success(request, "Registration successful. Please log in.")
 			return redirect('masuk')
 	else:
 		form = RegistrasiForm()

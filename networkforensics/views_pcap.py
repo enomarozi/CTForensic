@@ -6,7 +6,7 @@ import base64
 
 def analisaPCAP(request, id_):
 	fileName = NetworkFile.objects.get(pk=id_)
-	path_file = "uploads/"+fileName.name
+	path_file = "uploads/networkforensics/"+fileName.name
 	packets = rdpcap(path_file)
 	summary_data = str(packets).split(' ')
 	context = {
