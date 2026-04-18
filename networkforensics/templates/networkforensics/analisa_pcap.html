@@ -76,6 +76,11 @@
                     <textarea class="form-control" id="bytesPacket" rows="10" readonly></textarea>
                 </div>
 
+                <div class="col-12" id="decompressedContainer" hidden>
+                    <label class="form-label">Decompressed Packet</label>
+                    <textarea class="form-control" id="decompressedPacket" rows="10" readonly></textarea>
+                </div>
+
                 <div class="col-12" id="dnsContainer" hidden>
                     <label class="form-label">DNS Query</label>
                     <textarea class="form-control" id="dnsPacket" rows="10" readonly></textarea>
@@ -87,7 +92,8 @@
     
     <script>
         function hidden_again() {
-            const el = document.getElementById('dnsContainer').hidden = true;;
+            let dnsContainer = document.getElementById('dnsContainer').hidden = true;
+            let decompressedContainer = document.getElementById('decompressedContainer').hidden = true;
         }
         function displayTotal() {
             var selectedIpPair = document.getElementById("ipaddress").value;
@@ -111,8 +117,12 @@
                         document.getElementById('source_port').value = data.sport;
                         document.getElementById('destination_port').value = data.dport;
                         document.getElementById('bytesPacket').value = data.bytes_data_encode;
+                        if(data.decompressed_data_encode != null){
+                            let el = document.getElementById('decompressedContainer').removeAttribute('hidden');
+                            document.getElementById('decompressedPacket').value = data.decompressed_data_encode;
+                        }
                         if(data.dns != null){
-                            const el = document.getElementById('dnsContainer').removeAttribute('hidden');
+                            let el = document.getElementById('dnsContainer').removeAttribute('hidden');
                             document.getElementById('dnsPacket').value = data.dns;
                         }
                     })

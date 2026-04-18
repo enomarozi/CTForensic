@@ -65,8 +65,8 @@ def pengaturan(request):
 		}	
 		return render(request, 'account/pengaturan.html', context)
 	else:
-		form = CustomAuthenticationForm()
-	return render(request, 'account/masuk.html',{'form':form})
+		form = PengaturanForm()
+	return render(request, 'account/pengaturan.html',{'form':form})
 
 @login_required(login_url='masuk')
 def keluar(request):

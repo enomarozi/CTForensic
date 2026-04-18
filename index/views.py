@@ -8,7 +8,8 @@ import os
 
 @login_required(login_url='masuk')
 def index(request):
-	return render(request,'index/index.html')
+	context = {"title":"Dashboard"}
+	return render(request,'index/index.html',context)
 
 def fileSize(sizes):
 	list_size = ["KB","MB","GB","TB"]

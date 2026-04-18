@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .models import NetworkFile
 from scapy.all import *
+import zlib
 import base64
 
 def analisaPCAP(request, id_):
@@ -45,11 +46,12 @@ def checkPacket(request):
 			'sport': result[0],
 			'dport': result[1],
 			'bytes_data_encode':result[2],
-			'dns': portDNS(packets,ip_address) if 53 in result[1] or 53 in result[0] else None,
+			'dns': portDNS(packets, ip_address) if 53 in result[1] or 53 in result[0] else None,
+			'decompressed_data_encode': decompressedData(packets,ip_address),
 		}
 		return JsonResponse(response_data)
 
-def bytesData(packets,ip_address):
+def bytesData(packets, ip_address):
 	result = ""
 	ip_src, ip_dst = ip_address.split("-")
 	sport, dport, type_ = set(),set(),set()
@@ -82,9 +84,27 @@ def bytesData(packets,ip_address):
 	if len(dport) == 0:
 		dport.add("Tidak ada port")
 	if len(type_) == 0:
-		type_.add("Others")
+		type_.add("ICMP")
 	return (list(sport),list(dport),result_byte.decode(errors='ignore'),list(type_))
 
+def decompressedData(packets, ip_address):
+	ip_src, ip_dst = ip_address.split("-")
+	for i in packets:
+		try:
+			if IP in i and i[IP].src == ip_src and i[IP].dst == ip_dst:
+				if Raw in i:
+					if b"Content-Encoding: gzip" in raw:
+						parts = raw.split(b"\r\n\r\n", 1)
+						if len(parts) == 2:
+							body = parts[1]
+							print(body)
+							try:
+								decompressed = zlib.decompress(body)
+								return decompressed.decode(errors="ignore")
+							except:
+								pass
+		except Exception as e:
+			pass
 def portDNS(packets,ip_address):
 	ip_src, ip_dst = ip_address.split("-")
 	result = b''
