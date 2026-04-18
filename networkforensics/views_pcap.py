@@ -48,6 +48,7 @@ def checkPacket(request):
 			'bytes_data_encode':result[2],
 			'dns': portDNS(packets, ip_address) if 53 in result[1] or 53 in result[0] else None,
 			'decompressed_data_encode': decompressedData(packets,ip_address),
+			'icmp_data': icmpData(packets, ip_address) if result[3][0] == "ICMP" else None,
 		}
 		return JsonResponse(response_data)
 
@@ -97,7 +98,6 @@ def decompressedData(packets, ip_address):
 						parts = raw.split(b"\r\n\r\n", 1)
 						if len(parts) == 2:
 							body = parts[1]
-							print(body)
 							try:
 								decompressed = zlib.decompress(body)
 								return decompressed.decode(errors="ignore")
@@ -105,6 +105,19 @@ def decompressedData(packets, ip_address):
 								pass
 		except Exception as e:
 			pass
+
+
+def icmpData(packets, ip_address):
+	ip_src, ip_dst = ip_address.split("-")
+	result_byte = b''
+	for i in packets:
+		try:
+			if i.haslayer(ICMP) and i[IP].src == ip_src and i[IP].dst == ip_dst:
+				result_byte += i[ICMP][Raw].load+b"\n"
+		except:
+			pass
+	return result_byte.decode(errors='ignore')
+
 def portDNS(packets,ip_address):
 	ip_src, ip_dst = ip_address.split("-")
 	result = b''

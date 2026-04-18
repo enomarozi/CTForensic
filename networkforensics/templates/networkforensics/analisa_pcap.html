@@ -81,6 +81,11 @@
                     <textarea class="form-control" id="decompressedPacket" rows="10" readonly></textarea>
                 </div>
 
+                <div class="col-12" id="icmpContainer" hidden>
+                    <label class="form-label">ICMP Data</label>
+                    <textarea class="form-control" id="icmpPacket" rows="10" readonly></textarea>
+                </div>
+
                 <div class="col-12" id="dnsContainer" hidden>
                     <label class="form-label">DNS Query</label>
                     <textarea class="form-control" id="dnsPacket" rows="10" readonly></textarea>
@@ -92,8 +97,9 @@
     
     <script>
         function hidden_again() {
-            let dnsContainer = document.getElementById('dnsContainer').hidden = true;
             let decompressedContainer = document.getElementById('decompressedContainer').hidden = true;
+            let icmpContainer = document.getElementById('icmpContainer').hidden = true;
+            let dnsContainer = document.getElementById('dnsContainer').hidden = true;
         }
         function displayTotal() {
             var selectedIpPair = document.getElementById("ipaddress").value;
@@ -120,6 +126,10 @@
                         if(data.decompressed_data_encode != null){
                             let el = document.getElementById('decompressedContainer').removeAttribute('hidden');
                             document.getElementById('decompressedPacket').value = data.decompressed_data_encode;
+                        }
+                        if(data.icmp_data){
+                            let el = document.getElementById('icmpContainer').removeAttribute('hidden');
+                            document.getElementById('icmpPacket').value = data.icmp_data;
                         }
                         if(data.dns != null){
                             let el = document.getElementById('dnsContainer').removeAttribute('hidden');
